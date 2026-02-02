@@ -1,0 +1,1637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coming Soon</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Press Start 2P', cursive;
+            overflow: hidden;
+            background: #5c94fc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+        #gameContainer {
+            position: relative;
+        }
+
+        #gameCanvas {
+            display: block;
+            background: #5c94fc;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+            border: 8px solid #000;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        #gameOver, #victory {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            padding: 40px 50px;
+            border: 8px solid #fff;
+            text-align: center;
+            color: #fff;
+            z-index: 1000;
+            box-shadow: 0 0 50px rgba(255, 255, 255, 0.5);
+        }
+
+        #startScreen {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(139, 0, 139, 0.95);
+            padding: 50px 60px;
+            border: 8px solid #FFD700;
+            text-align: center;
+            color: #fff;
+            z-index: 1000;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.7);
+        }
+
+        #startScreen h1 {
+            color: #FFD700;
+            font-size: 32px;
+            margin-bottom: 30px;
+        }
+
+        #startScreen .subtitle {
+            font-size: 16px;
+            color: #FFB6C1;
+            margin-bottom: 25px;
+        }
+
+        #startScreen .objective {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            margin: 20px 0;
+            border: 3px solid #FF1493;
+            line-height: 2;
+        }
+
+        #victory {
+            background: rgba(255, 20, 147, 0.95);
+            border-color: #ff69b4;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 25px;
+            text-shadow: 4px 4px 0 #000;
+        }
+
+        p {
+            font-size: 14px;
+            margin: 15px 0;
+            line-height: 2;
+        }
+
+        button {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 16px;
+            padding: 18px 35px;
+            margin-top: 25px;
+            background: #ff1493;
+            color: white;
+            border: 4px solid #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 4px 4px 0 #000;
+        }
+
+        button:hover {
+            background: #ff69b4;
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0 #000;
+        }
+
+        button:active {
+            transform: translate(0, 0);
+            box-shadow: 2px 2px 0 #000;
+        }
+
+        #controls {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            font-size: 11px;
+            border: 4px solid #fff;
+            line-height: 2;
+            box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        #score {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            font-size: 13px;
+            border: 4px solid #fff;
+            box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.3);
+            min-width: 150px;
+        }
+
+        #heartDisplay {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            justify-content: center;
+        }
+
+        .heart-icon {
+            font-size: 24px;
+            transition: all 0.3s;
+        }
+
+        .heart-icon.collected {
+            color: #ff1493;
+            animation: heartPop 0.5s ease;
+        }
+
+        .heart-icon.uncollected {
+            color: #666;
+            opacity: 0.3;
+        }
+
+        @keyframes heartPop {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+
+        .heart {
+            color: #ff1493;
+            display: inline-block;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+        }
+
+        #scoreValue, #flowerCount {
+            color: #ffff00;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        
+        <div id="score">
+            <p style="text-align: center; margin-bottom: 5px;">HEARTS</p>
+            <div id="heartDisplay">
+                <span class="heart-icon uncollected" id="heart1">♥</span>
+                <span class="heart-icon uncollected" id="heart2">♥</span>
+                <span class="heart-icon uncollected" id="heart3">♥</span>
+            </div>
+            <p style="text-align: center; margin-top: 15px; font-size: 11px;">LIVES: <span id="livesCount">3</span> 👸</p>
+        </div>
+
+        <div id="startScreen">
+            <h1>💕 PRINCESS ADVENTURE 💕</h1>
+            <p class="subtitle">A Valentine's Day Quest</p>
+            <div class="objective">
+                <p>🏰 OBJECTIVE 🏰</p>
+                <p>Collect all 3 HEARTS ♥♥♥</p>
+                <p>Reach the castle to save your prince!</p>
+                <p style="margin-top: 15px;">⚠️ Avoid broken heart enemies!</p>
+            </div>
+            <p style="font-size: 12px; margin: 20px 0;">
+                CONTROLS:<br>
+                ← → Arrow Keys to Move<br>
+                SPACE or ↑ to Jump
+            </p>
+            <button onclick="startGame()">START ADVENTURE</button>
+        </div>
+
+        <div id="gameOver">
+            <h1>GAME OVER 💔</h1>
+            <p>The princess needs to try again!</p>
+            <button onclick="location.reload()">RESTART</button>
+        </div>
+
+        <div id="victory">
+            <h1>TRUE LOVE! 💕</h1>
+            <p>Princess saved her prince!</p>
+            <p class="heart">♥ ♥ ♥</p>
+            <p>Happy Valentine's Day!</p>
+            <button onclick="location.reload()">PLAY AGAIN</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = false;
+
+        // Game constants
+        const GRAVITY = 0.75;
+        const JUMP_POWER = -9;
+        const MOVE_SPEED = 2;
+        const MAX_FALL_SPEED = 10;
+        const FRICTION = 0.85;
+        const ACCELERATION = 0.3;
+
+        // Game state
+        let gameState = 'start';
+        let score = 0;
+        let heartsCollected = 0;
+        let frameCount = 0;
+        let lives = 3;
+
+        // Show start screen
+        window.addEventListener('load', () => {
+            document.getElementById('startScreen').style.display = 'block';
+        });
+
+        function startGame() {
+            document.getElementById('startScreen').style.display = 'none';
+            gameState = 'playing';
+            lives = 3;
+            heartsCollected = 0;
+            score = 0;
+            
+            // Reset princess
+            princess.x = 50;
+            princess.y = 450;
+            princess.velocityX = 0;
+            princess.velocityY = 0;
+            princess.invincible = false;
+            
+            // Reset hearts
+            hearts.forEach(heart => heart.collected = false);
+            
+            // Reset enemies
+            enemies.forEach(enemy => enemy.alive = true);
+            
+            // Update displays
+            document.getElementById('livesCount').textContent = lives;
+            updateScore();
+        }
+
+        // Particle system
+        const particles = [];
+
+        // Princess (player) - REDUCED SIZE
+        const princess = {
+            x: 50,
+            y: 450,
+            width: 16,
+            height: 38,
+            velocityX: 0,
+            velocityY: 0,
+            jumping: false,
+            onGround: false,
+            direction: 'right',
+            animFrame: 0,
+            animTimer: 0,
+            animSpeed: 8,
+            blinkTimer: 0,
+            blinkDuration: 0,
+            eyesOpen: true,
+            dressOffset: 0,
+            invincible: false
+        };
+
+        // Prince - REDUCED SIZE
+        const prince = {
+            x: 710,
+            y: 490,
+            width: 16,
+            height: 38,
+            blinkTimer: 0,
+            blinkDuration: 0,
+            eyesOpen: true,
+            animFrame: 0,
+            animTimer: 0
+        };
+
+        // Level design - Harder Mario-style platforms
+        const platforms = [
+            // Ground - with gaps
+            { x: 0, y: 550, width: 200, height: 50, type: 'ground' },
+            { x: 250, y: 550, width: 120, height: 50, type: 'ground' },
+            { x: 420, y: 550, width: 100, height: 50, type: 'ground' },
+            { x: 570, y: 550, width: 230, height: 50, type: 'ground' },
+            
+            // Floating platforms - harder jumps
+            { x: 90, y: 480, width: 70, height: 20, type: 'brick' },
+            { x: 180, y: 420, width: 60, height: 20, type: 'brick' },
+            { x: 270, y: 360, width: 60, height: 20, type: 'brick' },
+            { x: 360, y: 300, width: 70, height: 20, type: 'brick' },
+            { x: 460, y: 360, width: 60, height: 20, type: 'brick' },
+            { x: 550, y: 420, width: 60, height: 20, type: 'brick' },
+            { x: 450, y: 240, width: 80, height: 20, type: 'brick' },
+            { x: 300, y: 200, width: 90, height: 20, type: 'brick' },
+        ];
+
+        // Enemies (broken hearts) - smaller size, slower movement
+        const enemies = [
+            { x: 120, y: 515, width: 24, height: 28, velocityX: 0.8, type: 'goomba', alive: true },
+            { x: 280, y: 515, width: 24, height: 28, velocityX: -0.7, type: 'goomba', alive: true },
+            { x: 450, y: 515, width: 24, height: 28, velocityX: 0.85, type: 'goomba', alive: true },
+            { x: 650, y: 515, width: 24, height: 28, velocityX: -0.8, type: 'goomba', alive: true },
+            { x: 180, y: 390, width: 24, height: 28, velocityX: 0.6, type: 'goomba', alive: true },
+            { x: 460, y: 325, width: 24, height: 28, velocityX: -0.65, type: 'goomba', alive: true }
+        ];
+
+        // Hearts to collect - harder to reach positions
+        let hearts = [
+            { x: 190, y: 380, width: 28, height: 28, collected: false, float: 0 },
+            { x: 370, y: 260, width: 28, height: 28, collected: false, float: 0 },
+            { x: 460, y: 200, width: 28, height: 28, collected: false, float: 0 }
+        ];
+
+        // Castle
+        const castle = {
+            x: 650,
+            y: 380,
+            width: 140,
+            height: 170
+        };
+
+        // Flag pole
+        const flagPole = {
+            x: 620,
+            y: 200,
+            width: 10,
+            height: 350,
+            flagY: 200,
+            reached: false
+        };
+
+        // Clouds
+        const clouds = [
+            { x: 80, y: 60, size: 50, speed: 0.2 },
+            { x: 280, y: 40, size: 70, speed: 0.15 },
+            { x: 520, y: 80, size: 60, speed: 0.25 },
+            { x: 180, y: 130, size: 45, speed: 0.18 }
+        ];
+
+        // Input
+        const keys = {};
+        
+        document.addEventListener('keydown', (e) => {
+            if (gameState !== 'playing') return;
+            keys[e.key] = true;
+            
+            if ((e.key === ' ' || e.key === 'ArrowUp') && princess.onGround && !princess.jumping) {
+                princess.velocityY = JUMP_POWER;
+                princess.jumping = true;
+                princess.onGround = false;
+            }
+            e.preventDefault();
+        });
+
+        document.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+        });
+
+        // Particle class
+        class Particle {
+            constructor(x, y, vx, vy, color) {
+                this.x = x;
+                this.y = y;
+                this.vx = vx;
+                this.vy = vy;
+                this.color = color;
+                this.life = 60;
+                this.maxLife = 60;
+                this.size = Math.random() * 3 + 2;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vy += 0.1; // Gravity
+                this.life--;
+            }
+
+            draw() {
+                const alpha = this.life / this.maxLife;
+                ctx.fillStyle = this.color.replace('1)', `${alpha})`);
+                ctx.fillRect(Math.round(this.x), Math.round(this.y), this.size, this.size);
+            }
+
+            isDead() {
+                return this.life <= 0;
+            }
+        }
+
+        // Create heart particles
+        function createHeartParticles(x, y, count = 5) {
+            for (let i = 0; i < count; i++) {
+                const angle = (Math.PI * 2 * i) / count;
+                const speed = Math.random() * 2 + 1;
+                const vx = Math.cos(angle) * speed;
+                const vy = Math.sin(angle) * speed - 2;
+                particles.push(new Particle(x, y, vx, vy, 'rgba(255, 20, 147, 1)'));
+            }
+        }
+
+        // Draw functions
+        function drawCloud(x, y, size) {
+            ctx.fillStyle = '#ffffff';
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.1)';
+            ctx.shadowBlur = 4;
+            
+            ctx.beginPath();
+            ctx.arc(x, y, size * 0.3, 0, Math.PI * 2);
+            ctx.arc(x + size * 0.3, y, size * 0.4, 0, Math.PI * 2);
+            ctx.arc(x + size * 0.6, y, size * 0.3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.shadowBlur = 0;
+        }
+
+        function drawPrincess() {
+            // Skip drawing if invincible and flash is on
+            if (princess.invincible && Math.floor(frameCount / 10) % 2 === 0) {
+                return;
+            }
+            
+            const x = Math.round(princess.x);
+            const y = Math.round(princess.y);
+            const s = 2; // REDUCED FROM 3 TO 2
+            const facingRight = princess.direction === 'right';
+
+            // Dress flow animation
+            if (!princess.onGround) {
+                princess.dressOffset = Math.sin(frameCount * 0.2) * 2;
+            } else {
+                princess.dressOffset *= 0.9;
+            }
+
+            ctx.save();
+            
+            // Crown (side view)
+            ctx.fillStyle = '#FFD700';
+            if (facingRight) {
+                ctx.fillRect(x + s * 3, y - s, s * 5, s * 2.5);
+                ctx.fillRect(x + s * 5, y - s * 2, s, s * 2);
+                ctx.fillRect(x + s * 7, y - s * 1.5, s, s * 1.5);
+            } else {
+                ctx.fillRect(x + s * 2, y - s, s * 5, s * 2.5);
+                ctx.fillRect(x + s * 2, y - s * 1.5, s, s * 1.5);
+                ctx.fillRect(x + s * 4, y - s * 2, s, s * 2);
+            }
+            
+            // Crown jewels
+            ctx.fillStyle = '#FF1493';
+            if (facingRight) {
+                ctx.fillRect(x + s * 5, y - s, s, s);
+                ctx.fillRect(x + s * 7, y - s * 0.5, s * 0.5, s * 0.5);
+            } else {
+                ctx.fillRect(x + s * 2.5, y - s * 0.5, s * 0.5, s * 0.5);
+                ctx.fillRect(x + s * 4, y - s, s, s);
+            }
+            
+            // Hair (long flowing - side view)
+            ctx.fillStyle = '#5A2D0C';
+            if (facingRight) {
+                // Hair back
+                ctx.fillRect(x + s * 2, y + s * 2, s * 4, s * 4);
+                ctx.fillRect(x + s * 1, y + s * 6, s * 3, s * 8);
+                // Hair front
+                ctx.fillRect(x + s * 6, y + s * 2, s * 2, s * 3);
+            } else {
+                // Hair back
+                ctx.fillRect(x + s * 4, y + s * 2, s * 4, s * 4);
+                ctx.fillRect(x + s * 6, y + s * 6, s * 3, s * 8);
+                // Hair front
+                ctx.fillRect(x + s * 2, y + s * 2, s * 2, s * 3);
+            }
+            
+            // Hair highlights
+            ctx.fillStyle = '#8B4513';
+            if (facingRight) {
+                ctx.fillRect(x + s * 3, y + s * 3, s * 2, s);
+                ctx.fillRect(x + s * 2, y + s * 8, s, s * 2);
+            } else {
+                ctx.fillRect(x + s * 5, y + s * 3, s * 2, s);
+                ctx.fillRect(x + s * 7, y + s * 8, s, s * 2);
+            }
+
+            // Face (side profile)
+            ctx.fillStyle = '#FFD6B0';
+            if (facingRight) {
+                ctx.fillRect(x + s * 4, y + s * 3, s * 4, s * 6);
+                // Nose
+                ctx.fillRect(x + s * 8, y + s * 5, s, s * 2);
+            } else {
+                ctx.fillRect(x + s * 2, y + s * 3, s * 4, s * 6);
+                // Nose
+                ctx.fillRect(x + s * 1, y + s * 5, s, s * 2);
+            }
+
+            // Eye (single eye in side view)
+            if (princess.eyesOpen) {
+                ctx.fillStyle = '#000';
+                if (facingRight) {
+                    ctx.fillRect(x + s * 6, y + s * 4.5, s * 1.5, s * 2);
+                    // Eye shine
+                    ctx.fillStyle = '#fff';
+                    ctx.fillRect(x + s * 6.5, y + s * 4.5, s * 0.5, s);
+                } else {
+                    ctx.fillRect(x + s * 2.5, y + s * 4.5, s * 1.5, s * 2);
+                    // Eye shine
+                    ctx.fillStyle = '#fff';
+                    ctx.fillRect(x + s * 3, y + s * 4.5, s * 0.5, s);
+                }
+            } else {
+                // Closed eye
+                ctx.fillStyle = '#000';
+                if (facingRight) {
+                    ctx.fillRect(x + s * 6, y + s * 5.5, s * 1.5, s);
+                } else {
+                    ctx.fillRect(x + s * 2.5, y + s * 5.5, s * 1.5, s);
+                }
+            }
+
+            // Rosy cheek
+            ctx.fillStyle = 'rgba(255, 182, 193, 0.6)';
+            if (facingRight) {
+                ctx.fillRect(x + s * 5, y + s * 6, s * 2, s * 1.5);
+            } else {
+                ctx.fillRect(x + s * 3, y + s * 6, s * 2, s * 1.5);
+            }
+
+            // Smile (side profile)
+            ctx.fillStyle = '#000';
+            if (facingRight) {
+                ctx.fillRect(x + s * 6.5, y + s * 7.5, s * 1.5, s * 0.5);
+                ctx.fillRect(x + s * 7.5, y + s * 7, s * 0.5, s * 0.5);
+            } else {
+                ctx.fillRect(x + s * 2, y + s * 7.5, s * 1.5, s * 0.5);
+                ctx.fillRect(x + s * 2, y + s * 7, s * 0.5, s * 0.5);
+            }
+
+            // Neck
+            ctx.fillStyle = '#FFD6B0';
+            ctx.fillRect(x + s * 4, y + s * 9, s * 2, s * 1.5);
+
+            // Dress with flow
+            const dressY = y + s * 10 + princess.dressOffset;
+            ctx.fillStyle = '#FF69B4';
+            ctx.fillRect(x + s * 2, y + s * 10, s * 6, s * 8);
+            
+            // Dress details
+            ctx.fillStyle = '#FFB6C1';
+            ctx.fillRect(x + s * 2, y + s * 11, s * 6, s);
+            ctx.fillRect(x + s * 2, y + s * 14, s * 6, s);
+            
+            // Dress flowing bottom
+            ctx.fillStyle = '#FF69B4';
+            if (!princess.onGround) {
+                ctx.fillRect(x + s * 2 + princess.dressOffset * 0.5, y + s * 17, s * 6, s);
+            }
+
+            // Arms (side view)
+            ctx.fillStyle = '#FFD6B0';
+            if (princess.onGround && Math.abs(princess.velocityX) > 0.5) {
+                // Walking - arm swing
+                const armSwing = princess.animFrame === 0 ? s : -s;
+                if (facingRight) {
+                    // Front arm
+                    ctx.fillRect(x + s * 6, y + s * 11 + armSwing, s * 2, s * 5);
+                    // Back arm hint
+                    ctx.fillRect(x + s * 3, y + s * 12 - armSwing, s, s * 3);
+                } else {
+                    // Front arm
+                    ctx.fillRect(x + s * 2, y + s * 11 + armSwing, s * 2, s * 5);
+                    // Back arm hint
+                    ctx.fillRect(x + s * 6, y + s * 12 - armSwing, s, s * 3);
+                }
+            } else {
+                // Standing - arms at sides
+                if (facingRight) {
+                    ctx.fillRect(x + s * 7, y + s * 11, s * 1.5, s * 5);
+                    ctx.fillRect(x + s * 3, y + s * 12, s, s * 3);
+                } else {
+                    ctx.fillRect(x + s * 1.5, y + s * 11, s * 1.5, s * 5);
+                    ctx.fillRect(x + s * 6, y + s * 12, s, s * 3);
+                }
+            }
+
+            // Legs (side view walking animation)
+            if (princess.onGround && Math.abs(princess.velocityX) > 0.5) {
+                ctx.fillStyle = '#FFD6B0';
+                
+                if (facingRight) {
+                    if (princess.animFrame === 0) {
+                        // Front leg forward
+                        ctx.fillRect(x + s * 5, y + s * 18, s * 2, s * 3);
+                        // Back leg
+                        ctx.fillRect(x + s * 3, y + s * 19, s * 2, s * 2);
+                    } else {
+                        // Front leg back
+                        ctx.fillRect(x + s * 5, y + s * 19, s * 2, s * 2);
+                        // Back leg forward
+                        ctx.fillRect(x + s * 3, y + s * 18, s * 2, s * 3);
+                    }
+                    
+                    // Shoes
+                    ctx.fillStyle = '#FF69B4';
+                    if (princess.animFrame === 0) {
+                        ctx.fillRect(x + s * 5, y + s * 20.5, s * 2.5, s * 1);
+                        ctx.fillRect(x + s * 3, y + s * 20.5, s * 2, s * 0.5);
+                    } else {
+                        ctx.fillRect(x + s * 5, y + s * 20.5, s * 2, s * 0.5);
+                        ctx.fillRect(x + s * 3, y + s * 20.5, s * 2.5, s * 1);
+                    }
+                } else {
+                    if (princess.animFrame === 0) {
+                        // Front leg forward
+                        ctx.fillRect(x + s * 3, y + s * 18, s * 2, s * 3);
+                        // Back leg
+                        ctx.fillRect(x + s * 5, y + s * 19, s * 2, s * 2);
+                    } else {
+                        // Front leg back
+                        ctx.fillRect(x + s * 3, y + s * 19, s * 2, s * 2);
+                        // Back leg forward
+                        ctx.fillRect(x + s * 5, y + s * 18, s * 2, s * 3);
+                    }
+                    
+                    // Shoes
+                    ctx.fillStyle = '#FF69B4';
+                    if (princess.animFrame === 0) {
+                        ctx.fillRect(x + s * 0.5, y + s * 20.5, s * 2.5, s * 1);
+                        ctx.fillRect(x + s * 5, y + s * 20.5, s * 2, s * 0.5);
+                    } else {
+                        ctx.fillRect(x + s * 3, y + s * 20.5, s * 2, s * 0.5);
+                        ctx.fillRect(x + s * 2.5, y + s * 20.5, s * 2.5, s * 1);
+                    }
+                }
+            } else {
+                // Standing still
+                ctx.fillStyle = '#FFD6B0';
+                if (facingRight) {
+                    ctx.fillRect(x + s * 4, y + s * 18, s * 2, s * 3);
+                } else {
+                    ctx.fillRect(x + s * 4, y + s * 18, s * 2, s * 3);
+                }
+                
+                // Shoes
+                ctx.fillStyle = '#FF69B4';
+                if (facingRight) {
+                    ctx.fillRect(x + s * 4, y + s * 20.5, s * 2.5, s * 1);
+                } else {
+                    ctx.fillRect(x + s * 1.5, y + s * 20.5, s * 2.5, s * 1);
+                }
+            }
+
+            ctx.restore();
+
+            // Heart particles around princess
+            if (frameCount % 30 === 0) {
+                createHeartParticles(x + princess.width / 2, y + princess.height / 2, 1);
+            }
+        }
+
+        function drawPrince() {
+            const x = Math.round(prince.x);
+            const y = Math.round(prince.y);
+            const s = 2; // REDUCED FROM 3 TO 2
+            const facingLeft = true; // Prince faces left toward the princess
+
+            // Idle animation
+            prince.animTimer++;
+            if (prince.animTimer > 60) {
+                prince.animFrame = (prince.animFrame + 1) % 2;
+                prince.animTimer = 0;
+            }
+
+            // Crown (side view)
+            ctx.fillStyle = '#FFD700';
+            ctx.fillRect(x + s * 2, y - s, s * 5, s * 2.5);
+            ctx.fillRect(x + s * 2, y - s * 1.5, s, s * 1.5);
+            ctx.fillRect(x + s * 4, y - s * 2, s, s * 2);
+            
+            // Crown jewels
+            ctx.fillStyle = '#4169E1';
+            ctx.fillRect(x + s * 2.5, y - s * 0.5, s * 0.5, s * 0.5);
+            ctx.fillRect(x + s * 4, y - s, s, s);
+            
+            // Hair (styled - side view)
+            ctx.fillStyle = '#3B1F0B';
+            // Hair back
+            ctx.fillRect(x + s * 4, y + s * 2, s * 4, s * 4);
+            // Hair front styled up
+            ctx.fillRect(x + s * 2, y + s * 2, s * 2, s * 3);
+            ctx.fillRect(x + s * 2, y + s * 1, s * 2, s);
+            
+            // Hair texture
+            ctx.fillStyle = '#654321';
+            ctx.fillRect(x + s * 5, y + s * 2.5, s, s);
+            ctx.fillRect(x + s * 6.5, y + s * 2.5, s, s);
+            
+            // Hair highlights
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(x + s * 2.5, y + s * 2, s * 1.5, s);
+            
+            // Hair shine
+            ctx.fillStyle = '#A0522D';
+            ctx.fillRect(x + s * 3, y + s * 2.5, s, s * 0.5);
+
+            // Face (side profile)
+            ctx.fillStyle = '#FFD6B0';
+            ctx.fillRect(x + s * 2, y + s * 3, s * 4, s * 6);
+            // Nose
+            ctx.fillRect(x + s * 1, y + s * 5, s, s * 2);
+
+            // Eye (single eye in side view)
+            if (prince.eyesOpen) {
+                ctx.fillStyle = '#000';
+                ctx.fillRect(x + s * 2.5, y + s * 4.5, s * 1.5, s * 2);
+                // Eye shine
+                ctx.fillStyle = '#fff';
+                ctx.fillRect(x + s * 3, y + s * 4.5, s * 0.5, s);
+            } else {
+                // Closed eye
+                ctx.fillStyle = '#000';
+                ctx.fillRect(x + s * 2.5, y + s * 5.5, s * 1.5, s);
+            }
+
+            // Rosy cheek
+            ctx.fillStyle = 'rgba(255, 182, 193, 0.5)';
+            ctx.fillRect(x + s * 3, y + s * 6, s * 2, s * 1.5);
+
+            // Smile (side profile)
+            ctx.fillStyle = '#000';
+            ctx.fillRect(x + s * 2, y + s * 7.5, s * 1.5, s * 0.5);
+            ctx.fillRect(x + s * 2, y + s * 7, s * 0.5, s * 0.5);
+
+            // Neck
+            ctx.fillStyle = '#FFD6B0';
+            ctx.fillRect(x + s * 3.5, y + s * 9, s * 2, s * 1.5);
+
+            // Tunic (side view)
+            ctx.fillStyle = '#4169E1';
+            ctx.fillRect(x + s * 2, y + s * 10, s * 6, s * 6);
+
+            // Tunic details
+            ctx.fillStyle = '#27408B';
+            ctx.fillRect(x + s * 2, y + s * 14, s * 6, s);
+            ctx.fillRect(x + s * 2, y + s * 11, s * 6, s * 0.5);
+
+            // Belt
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(x + s * 2, y + s * 13, s * 6, s);
+            
+            // Belt buckle
+            ctx.fillStyle = '#FFD700';
+            ctx.fillRect(x + s * 4, y + s * 13, s, s);
+
+            // Arms (side view with idle animation)
+            ctx.fillStyle = '#FFD6B0';
+            const armOffset = prince.animFrame === 1 ? s * 0.5 : 0;
+            // Front arm
+            ctx.fillRect(x + s * 2, y + s * 11 + armOffset, s * 2, s * 5);
+            // Back arm hint
+            ctx.fillRect(x + s * 6, y + s * 12 - armOffset, s, s * 3);
+
+            // Pants (side view)
+            ctx.fillStyle = '#DC143C';
+            ctx.fillRect(x + s * 3, y + s * 16, s * 4, s * 4);
+
+            // Legs (idle animation - alternating)
+            const frontLegY = prince.animFrame === 0 ? y + s * 20 : y + s * 20.5;
+            const backLegY = prince.animFrame === 0 ? y + s * 20.5 : y + s * 20;
+            
+            ctx.fillStyle = '#FFD6B0';
+            // Front leg
+            ctx.fillRect(x + s * 3, y + s * 18, s * 2, s * 3);
+            // Back leg hint
+            ctx.fillRect(x + s * 5.5, y + s * 19, s * 1.5, s * 2);
+            
+            // Boots
+            ctx.fillStyle = '#5A2D0C';
+            ctx.fillRect(x + s * 3, frontLegY, s * 2.5, s * 2);
+            ctx.fillRect(x + s * 5.5, backLegY, s * 1.5, s * 1.5);
+            
+            // Boot details
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(x + s * 3, frontLegY, s * 2.5, s * 0.5);
+
+            // Heart particles around prince
+            if (frameCount % 35 === 0) {
+                createHeartParticles(x + prince.width / 2, y + prince.height / 2, 1);
+            }
+        }
+
+        function drawPlatform(platform) {
+            const x = Math.round(platform.x);
+            const y = Math.round(platform.y);
+            
+            if (platform.type === 'ground') {
+                // Dirt/soil
+                ctx.fillStyle = '#8B4513';
+                ctx.fillRect(x, y, platform.width, platform.height);
+                
+                // Darker dirt patches
+                ctx.fillStyle = '#654321';
+                for (let i = 0; i < platform.width; i += 30) {
+                    ctx.fillRect(x + i + 5, y + 15, 10, 8);
+                    ctx.fillRect(x + i + 18, y + 28, 8, 6);
+                }
+                
+                // Grass layer - vibrant green
+                const grassGradient = ctx.createLinearGradient(0, y, 0, y + 12);
+                grassGradient.addColorStop(0, '#32CD32');
+                grassGradient.addColorStop(1, '#228B22');
+                ctx.fillStyle = grassGradient;
+                ctx.fillRect(x, y, platform.width, 12);
+                
+                // Grass blades
+                ctx.fillStyle = '#228B22';
+                for (let i = 0; i < platform.width; i += 8) {
+                    // Tall grass blades
+                    ctx.fillRect(x + i, y - 3, 2, 5);
+                    ctx.fillRect(x + i + 4, y - 2, 2, 4);
+                    ctx.fillRect(x + i + 6, y - 4, 2, 6);
+                }
+                
+                // Dark grass details
+                ctx.fillStyle = '#006400';
+                for (let i = 0; i < platform.width; i += 12) {
+                    ctx.fillRect(x + i + 2, y - 2, 1, 3);
+                }
+                
+                // Flowers on grass
+                for (let i = 0; i < platform.width; i += 45) {
+                    // Pink flower
+                    ctx.fillStyle = '#FF69B4';
+                    ctx.fillRect(x + i + 10, y - 3, 3, 3);
+                    ctx.fillRect(x + i + 9, y - 2, 1, 1);
+                    ctx.fillRect(x + i + 13, y - 2, 1, 1);
+                    
+                    // Yellow center
+                    ctx.fillStyle = '#FFD700';
+                    ctx.fillRect(x + i + 11, y - 2, 1, 1);
+                    
+                    // Stem
+                    ctx.fillStyle = '#228B22';
+                    ctx.fillRect(x + i + 11, y, 1, 3);
+                    
+                    // White flower
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.fillRect(x + i + 30, y - 2, 2, 2);
+                    ctx.fillRect(x + i + 29, y - 1, 1, 1);
+                    ctx.fillRect(x + i + 32, y - 1, 1, 1);
+                    
+                    // Yellow center
+                    ctx.fillStyle = '#FFD700';
+                    ctx.fillRect(x + i + 30, y - 1, 1, 1);
+                    
+                    // Stem
+                    ctx.fillStyle = '#228B22';
+                    ctx.fillRect(x + i + 30, y + 1, 1, 2);
+                }
+                
+                // Brick/dirt pattern with depth
+                ctx.strokeStyle = '#654321';
+                ctx.lineWidth = 2;
+                const blockSize = 25;
+                for (let i = 0; i < platform.width; i += blockSize) {
+                    for (let j = 12; j < platform.height; j += blockSize) {
+                        ctx.strokeRect(x + i, y + j, blockSize, blockSize);
+                        
+                        // Add some texture dots
+                        ctx.fillStyle = '#5A2D0C';
+                        ctx.fillRect(x + i + 8, y + j + 8, 2, 2);
+                        ctx.fillRect(x + i + 15, y + j + 12, 1, 1);
+                    }
+                }
+            } else {
+                // Floating brick - enhanced
+                // Base brick color with gradient
+                const brickGradient = ctx.createLinearGradient(0, y, 0, y + platform.height);
+                brickGradient.addColorStop(0, '#D2691E');
+                brickGradient.addColorStop(0.5, '#CD853F');
+                brickGradient.addColorStop(1, '#A0522D');
+                ctx.fillStyle = brickGradient;
+                ctx.fillRect(x, y, platform.width, platform.height);
+                
+                // Individual bricks with detail
+                ctx.fillStyle = '#8B4513';
+                const bw = 20;
+                for (let i = 0; i < platform.width; i += bw) {
+                    ctx.fillRect(x + i + 2, y + 2, bw - 4, platform.height - 4);
+                    
+                    // Brick texture
+                    ctx.fillStyle = '#A0522D';
+                    ctx.fillRect(x + i + 4, y + 4, 2, 2);
+                    ctx.fillRect(x + i + 10, y + 7, 1, 1);
+                    ctx.fillStyle = '#8B4513';
+                }
+                
+                // Highlight on top
+                ctx.fillStyle = '#F4A460';
+                ctx.fillRect(x + 2, y + 2, platform.width - 4, 3);
+                
+                // Shadow on bottom
+                ctx.fillStyle = '#654321';
+                ctx.fillRect(x + 2, y + platform.height - 4, platform.width - 4, 2);
+                
+                // Outline
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(x, y, platform.width, platform.height);
+                
+                // Small moss/grass on some bricks
+                if (Math.random() > 0.7) {
+                    ctx.fillStyle = '#228B22';
+                    ctx.fillRect(x + 2, y - 1, 3, 2);
+                }
+            }
+        }
+
+        function drawEnemy(enemy) {
+            if (!enemy.alive) return;
+            
+            const x = Math.round(enemy.x);
+            const y = Math.round(enemy.y);
+            
+            // Shadow
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+            ctx.fillRect(x + 2, y + 25, 20, 2);
+            
+            // Main broken heart body - clearer colors
+            // Left half of broken heart (darker red)
+            ctx.fillStyle = '#E63946';
+            ctx.beginPath();
+            ctx.arc(x + 6, y + 8, 4.5, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Left body
+            ctx.fillRect(x + 2, y + 8, 8, 8);
+            ctx.fillRect(x + 3, y + 15, 6, 4);
+            
+            // Right half of broken heart (darker shade - broken effect)
+            ctx.fillStyle = '#A4161A';
+            ctx.beginPath();
+            ctx.arc(x + 18, y + 9, 4, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Right body (offset to show broken)
+            ctx.fillRect(x + 14, y + 9, 8, 7);
+            ctx.fillRect(x + 15, y + 15, 6, 4);
+            
+            // Jagged break line in middle - more visible
+            ctx.fillStyle = '#5A0A0E';
+            ctx.fillRect(x + 10, y + 8, 1, 2);
+            ctx.fillRect(x + 11, y + 10, 1, 2);
+            ctx.fillRect(x + 10, y + 12, 1, 2);
+            ctx.fillRect(x + 11, y + 14, 1, 2);
+            
+            // Angry eyes - large and clear
+            ctx.fillStyle = '#FFFFFF';
+            // Left eye
+            ctx.fillRect(x + 4, y + 5, 3, 3);
+            // Right eye
+            ctx.fillRect(x + 17, y + 6, 3, 3);
+            
+            // Black pupils - angry look
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(x + 5, y + 6, 1.5, 1.5);
+            ctx.fillRect(x + 18, y + 7, 1.5, 1.5);
+            
+            // Angry eyebrows - angled down
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(x + 3.5, y + 4, 3.5, 0.8);
+            ctx.fillRect(x + 16.5, y + 4.5, 3.5, 0.8);
+            
+            // Frown mouth - angry expression
+            ctx.fillStyle = '#8B0000';
+            ctx.fillRect(x + 5, y + 17, 4, 1);
+            ctx.fillRect(x + 15, y + 17, 4, 1);
+            
+            // Outline for better clarity
+            ctx.strokeStyle = '#6A0000';
+            ctx.lineWidth = 0.8;
+            ctx.beginPath();
+            ctx.arc(x + 6, y + 8, 4.5, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(x + 18, y + 9, 4, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            // Inner shading for depth
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+            ctx.fillRect(x + 2, y + 8, 8, 8);
+            ctx.fillRect(x + 14, y + 9, 8, 7);
+            
+            // Animated bounce effect
+            const bounce = Math.sin(frameCount * 0.12 + x * 0.05) * 1.2;
+            ctx.fillStyle = 'rgba(230, 57, 70, 0.15)';
+            ctx.fillRect(x, y + bounce, 24, 28);
+        }
+
+        function drawHeart(heart) {
+            if (heart.collected) return;
+            
+            const x = Math.round(heart.x);
+            const y = Math.round(heart.y + Math.sin(heart.float) * 5);
+            const s = 3.5;
+            
+            // Outer glow - multiple layers
+            ctx.shadowColor = '#FF1493';
+            ctx.shadowBlur = 20;
+            
+            // Outer pink glow
+            ctx.fillStyle = 'rgba(255, 105, 180, 0.4)';
+            ctx.beginPath();
+            ctx.arc(x + s * 2.5, y + s * 2, s * 2.2, 0, Math.PI * 2);
+            ctx.arc(x + s * 5.5, y + s * 2, s * 2.2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillRect(x + s * 0.5, y + s * 2, s * 7, s * 4);
+            ctx.beginPath();
+            ctx.moveTo(x + s * 0.5, y + s * 3);
+            ctx.lineTo(x + s * 4, y + s * 8);
+            ctx.lineTo(x + s * 7.5, y + s * 3);
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.shadowBlur = 15;
+            
+            // Main heart body - bright pink
+            ctx.fillStyle = '#FF1493';
+            
+            // Top left circle
+            ctx.beginPath();
+            ctx.arc(x + s * 2.5, y + s * 2, s * 1.8, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Top right circle
+            ctx.beginPath();
+            ctx.arc(x + s * 5.5, y + s * 2, s * 1.8, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Center rectangle
+            ctx.fillRect(x + s * 0.8, y + s * 2, s * 6.4, s * 3.5);
+            
+            // Bottom triangle (heart point)
+            ctx.beginPath();
+            ctx.moveTo(x + s * 0.8, y + s * 4);
+            ctx.lineTo(x + s * 4, y + s * 8);
+            ctx.lineTo(x + s * 7.2, y + s * 4);
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.shadowBlur = 0;
+            
+            // Highlight/shine on heart
+            ctx.fillStyle = '#FFB6C1';
+            ctx.beginPath();
+            ctx.arc(x + s * 2.8, y + s * 1.8, s * 0.8, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillRect(x + s * 2, y + s * 2, s * 1.5, s * 1);
+            
+            // Bright shine spot
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(x + s * 2.5, y + s * 1.5, s * 0.8, s * 0.8);
+            ctx.fillRect(x + s * 3, y + s * 2, s * 0.5, s * 0.5);
+            
+            // Dark outline for definition
+            ctx.strokeStyle = '#C71585';
+            ctx.lineWidth = 0.5;
+            ctx.beginPath();
+            ctx.arc(x + s * 2.5, y + s * 2, s * 1.8, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(x + s * 5.5, y + s * 2, s * 1.8, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            // Animated sparkles around heart
+            const sparkleOffset = Math.sin(heart.float * 2) * 2;
+            ctx.fillStyle = '#FFD700';
+            ctx.fillRect(x - s, y + s * 3 + sparkleOffset, s * 0.5, s * 0.5);
+            ctx.fillRect(x + s * 8, y + s * 3 - sparkleOffset, s * 0.5, s * 0.5);
+            ctx.fillRect(x + s * 4, y - s + sparkleOffset, s * 0.5, s * 0.5);
+            ctx.fillRect(x + s * 4, y + s * 8 - sparkleOffset, s * 0.5, s * 0.5);
+            
+            // White sparkles
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(x + s * 1, y + s * 1 - sparkleOffset, s * 0.4, s * 0.4);
+            ctx.fillRect(x + s * 6.5, y + s * 6 + sparkleOffset, s * 0.4, s * 0.4);
+            
+            heart.float += 0.08;
+            
+            // More sparkle particles
+            if (frameCount % 15 === 0) {
+                createHeartParticles(x + s * 4, y + s * 4, 2);
+            }
+        }
+
+        function drawCastle() {
+            const x = Math.round(castle.x);
+            const y = Math.round(castle.y);
+            const s = 10;
+            
+            ctx.fillStyle = '#808080';
+            ctx.fillRect(x, y + s*3, s*12, s*14);
+            
+            ctx.fillRect(x, y, s*3, s*17);
+            ctx.fillRect(x + s*9, y, s*3, s*17);
+            
+            ctx.fillStyle = '#A9A9A9';
+            for (let i = 0; i < 4; i++) {
+                ctx.fillRect(x + i * s * 0.8, y - s, s * 0.6, s);
+                ctx.fillRect(x + s*9 + i * s * 0.8, y - s, s * 0.6, s);
+            }
+            
+            ctx.fillStyle = '#654321';
+            ctx.fillRect(x + s*4.5, y + s*11, s*3, s*6);
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(x + s*5, y + s*12, s, s*2);
+            
+            ctx.fillStyle = '#87CEEB';
+            ctx.fillRect(x + s, y + s*6, s*1.5, s*1.5);
+            ctx.fillRect(x + s*10, y + s*6, s*1.5, s*1.5);
+            ctx.fillRect(x + s*5.5, y + s*5, s*1.5, s*1.5);
+            
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(x + s*1.75, y + s*6);
+            ctx.lineTo(x + s*1.75, y + s*7.5);
+            ctx.moveTo(x + s, y + s*6.75);
+            ctx.lineTo(x + s*2.5, y + s*6.75);
+            ctx.stroke();
+        }
+
+        function drawFlagPole() {
+            const x = Math.round(flagPole.x);
+            const y = Math.round(flagPole.y);
+            
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(x, y, flagPole.width, flagPole.height);
+            
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.fillRect(x + 2, y, 3, flagPole.height);
+            
+            const flagY = flagPole.reached ? y + flagPole.height - 60 : flagPole.flagY;
+            ctx.fillStyle = '#FF1493';
+            
+            const fx = x - 35;
+            const fy = flagY;
+            const s = 5;
+            
+            // Heart-shaped flag
+            ctx.beginPath();
+            ctx.arc(fx + s * 2, fy + s * 1.5, s * 1.5, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.arc(fx + s * 4.5, fy + s * 1.5, s * 1.5, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.moveTo(fx + s * 0.5, fy + s * 2);
+            ctx.lineTo(fx + s * 3.25, fy + s * 6.5);
+            ctx.lineTo(fx + s * 6, fy + s * 2);
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.fillRect(fx + s * 0.5, fy + s * 1.5, s * 5.5, s * 3);
+            
+            ctx.fillStyle = '#FFD700';
+            ctx.beginPath();
+            ctx.arc(x + flagPole.width/2, y - 5, 8, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function updateBlinking() {
+            // Princess blinking
+            princess.blinkTimer++;
+            if (princess.blinkTimer > 180 && princess.blinkDuration === 0) {
+                princess.blinkDuration = 10;
+                princess.eyesOpen = false;
+                princess.blinkTimer = 0;
+            }
+            if (princess.blinkDuration > 0) {
+                princess.blinkDuration--;
+                if (princess.blinkDuration === 0) {
+                    princess.eyesOpen = true;
+                }
+            }
+
+            // Prince blinking
+            prince.blinkTimer++;
+            if (prince.blinkTimer > 200 && prince.blinkDuration === 0) {
+                prince.blinkDuration = 10;
+                prince.eyesOpen = false;
+                prince.blinkTimer = 0;
+            }
+            if (prince.blinkDuration > 0) {
+                prince.blinkDuration--;
+                if (prince.blinkDuration === 0) {
+                    prince.eyesOpen = true;
+                }
+            }
+        }
+
+        function updateParticles() {
+            for (let i = particles.length - 1; i >= 0; i--) {
+                particles[i].update();
+                if (particles[i].isDead()) {
+                    particles.splice(i, 1);
+                }
+            }
+        }
+
+        function drawParticles() {
+            particles.forEach(particle => particle.draw());
+        }
+
+        function updatePrincess() {
+            // Horizontal movement with acceleration (Super Mario style)
+            if (keys['ArrowLeft']) {
+                if (princess.velocityX > -MOVE_SPEED) {
+                    princess.velocityX -= ACCELERATION;
+                }
+                if (princess.velocityX < -MOVE_SPEED) {
+                    princess.velocityX = -MOVE_SPEED;
+                }
+                princess.direction = 'left';
+                princess.animTimer++;
+            } else if (keys['ArrowRight']) {
+                if (princess.velocityX < MOVE_SPEED) {
+                    princess.velocityX += ACCELERATION;
+                }
+                if (princess.velocityX > MOVE_SPEED) {
+                    princess.velocityX = MOVE_SPEED;
+                }
+                princess.direction = 'right';
+                princess.animTimer++;
+            } else {
+                // Apply friction when not moving
+                princess.velocityX *= FRICTION;
+                if (Math.abs(princess.velocityX) < 0.1) princess.velocityX = 0;
+            }
+
+            // Apply gravity
+            princess.velocityY += GRAVITY;
+            if (princess.velocityY > MAX_FALL_SPEED) {
+                princess.velocityY = MAX_FALL_SPEED;
+            }
+
+            // Update position
+            princess.x += princess.velocityX;
+            princess.y += princess.velocityY;
+
+            // Animation
+            if (Math.abs(princess.velocityX) > 0.5) {
+                if (princess.animTimer > princess.animSpeed) {
+                    princess.animFrame = (princess.animFrame + 1) % 2;
+                    princess.animTimer = 0;
+                }
+            } else {
+                princess.animFrame = 0;
+            }
+
+            // Platform collision
+            princess.onGround = false;
+            platforms.forEach(platform => {
+                if (checkCollision(princess, platform)) {
+                    // Landing on top
+                    if (princess.velocityY > 0 && 
+                        princess.y + princess.height - princess.velocityY <= platform.y + 5) {
+                        princess.y = platform.y - princess.height;
+                        princess.velocityY = 0;
+                        princess.jumping = false;
+                        princess.onGround = true;
+                    }
+                    // Hit from below
+                    else if (princess.velocityY < 0 && 
+                             princess.y - princess.velocityY >= platform.y + platform.height - 5) {
+                        princess.y = platform.y + platform.height;
+                        princess.velocityY = 0;
+                    }
+                }
+            });
+
+            // Boundary check
+            if (princess.x < 0) princess.x = 0;
+            if (princess.x > canvas.width - princess.width) {
+                princess.x = canvas.width - princess.width;
+            }
+
+            // Fall off screen
+            if (princess.y > canvas.height) {
+                gameOver();
+            }
+        }
+
+        function updateEnemies() {
+            enemies.forEach(enemy => {
+                if (!enemy.alive) return;
+
+                enemy.x += enemy.velocityX;
+
+                // Check if enemy is on a platform and near edge
+                let onPlatform = false;
+                let nearEdge = false;
+                
+                platforms.forEach(platform => {
+                    // Check if on platform
+                    if (enemy.x + enemy.width > platform.x && 
+                        enemy.x < platform.x + platform.width &&
+                        enemy.y + enemy.height >= platform.y - 5 &&
+                        enemy.y + enemy.height <= platform.y + 10) {
+                        onPlatform = true;
+                        
+                        // Check if near left edge
+                        if (enemy.x <= platform.x + 5 && enemy.velocityX < 0) {
+                            nearEdge = true;
+                        }
+                        // Check if near right edge
+                        if (enemy.x + enemy.width >= platform.x + platform.width - 5 && enemy.velocityX > 0) {
+                            nearEdge = true;
+                        }
+                    }
+                });
+
+                // Turn around at edges or walls (smarter AI)
+                if (nearEdge || enemy.x <= 0 || enemy.x + enemy.width >= canvas.width) {
+                    enemy.velocityX *= -1;
+                }
+
+                // Check collision with princess (only if not invincible)
+                if (checkCollision(princess, enemy) && !princess.invincible) {
+                    // Jump on enemy (stomp)
+                    if (princess.velocityY > 0 && 
+                        princess.y + princess.height - princess.velocityY <= enemy.y + 10) {
+                        enemy.alive = false;
+                        princess.velocityY = -8; // Bounce
+                        score += 200;
+                        updateScore();
+                        createHeartParticles(enemy.x + enemy.width / 2, enemy.y + enemy.height / 2, 8);
+                    } else {
+                        // Hit from side - lose life
+                        gameOver();
+                    }
+                }
+            });
+        }
+
+        function updateHearts() {
+            hearts.forEach(heart => {
+                if (!heart.collected && checkCollision(princess, heart)) {
+                    heart.collected = true;
+                    heartsCollected++;
+                    score += 500;
+                    updateScore();
+                    createHeartParticles(heart.x + heart.width / 2, heart.y + heart.height / 2, 15);
+                }
+            });
+        }
+
+        function updateClouds() {
+            clouds.forEach(cloud => {
+                cloud.x += cloud.speed;
+                if (cloud.x > canvas.width) {
+                    cloud.x = -cloud.size;
+                }
+            });
+        }
+
+        function checkWinCondition() {
+            if (heartsCollected < 3) return;
+
+            if (checkCollision(princess, flagPole)) {
+                flagPole.reached = true;
+                flagPole.flagY += 2;
+                if (flagPole.flagY >= flagPole.y + flagPole.height - 60) {
+                    flagPole.flagY = flagPole.y + flagPole.height - 60;
+                }
+            }
+
+            const castleDoor = {
+                x: castle.x + 45,
+                y: castle.y + 110,
+                width: 30,
+                height: 60
+            };
+
+            if (flagPole.reached && checkCollision(princess, castleDoor)) {
+                victory();
+            }
+        }
+
+        function checkCollision(a, b) {
+            return a.x < b.x + b.width &&
+                   a.x + a.width > b.x &&
+                   a.y < b.y + b.height &&
+                   a.y + a.height > b.y;
+        }
+
+        function updateScore() {
+            // Update visual heart display
+            for (let i = 1; i <= 3; i++) {
+                const heartIcon = document.getElementById(`heart${i}`);
+                if (i <= heartsCollected) {
+                    heartIcon.className = 'heart-icon collected';
+                } else {
+                    heartIcon.className = 'heart-icon uncollected';
+                }
+            }
+        }
+
+        function gameOver() {
+            if (gameState !== 'playing') return;
+            
+            lives--;
+            document.getElementById('livesCount').textContent = lives;
+            
+            if (lives <= 0) {
+                gameState = 'gameOver';
+                document.getElementById('gameOver').style.display = 'block';
+            } else {
+                // Respawn princess at start
+                princess.x = 50;
+                princess.y = 450;
+                princess.velocityX = 0;
+                princess.velocityY = 0;
+                princess.jumping = false;
+                
+                // Flash effect
+                let flashCount = 0;
+                const flashInterval = setInterval(() => {
+                    princess.invincible = !princess.invincible;
+                    flashCount++;
+                    if (flashCount > 10) {
+                        clearInterval(flashInterval);
+                        princess.invincible = false;
+                    }
+                }, 200);
+            }
+        }
+
+        function victory() {
+            if (gameState !== 'playing') return;
+            gameState = 'victory';
+            score += 1000;
+            updateScore();
+            document.getElementById('victory').style.display = 'block';
+            
+            // Victory heart explosion
+            for (let i = 0; i < 50; i++) {
+                const angle = (Math.PI * 2 * i) / 50;
+                const speed = Math.random() * 5 + 2;
+                const vx = Math.cos(angle) * speed;
+                const vy = Math.sin(angle) * speed - 3;
+                particles.push(new Particle(
+                    princess.x + princess.width / 2,
+                    princess.y + princess.height / 2,
+                    vx, vy, 'rgba(255, 20, 147, 1)'
+                ));
+            }
+        }
+
+        function update() {
+            if (gameState !== 'playing') {
+                updateParticles();
+                return;
+            }
+
+            frameCount++;
+            updatePrincess();
+            updateEnemies();
+            updateHearts();
+            updateClouds();
+            updateBlinking();
+            updateParticles();
+            checkWinCondition();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height * 0.7);
+            skyGradient.addColorStop(0, '#5c94fc');
+            skyGradient.addColorStop(1, '#87CEEB');
+            ctx.fillStyle = skyGradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height * 0.7);
+
+            // Brown background with brick texture
+            const brownGradient = ctx.createLinearGradient(0, canvas.height * 0.7, 0, canvas.height);
+            brownGradient.addColorStop(0, '#d4561f');
+            brownGradient.addColorStop(1, '#a84512');
+            ctx.fillStyle = brownGradient;
+            ctx.fillRect(0, canvas.height * 0.7, canvas.width, canvas.height * 0.3);
+            
+            // Draw brick pattern on brown background
+            const brickWidth = 35;
+            const brickHeight = 22;
+            const bgStartY = canvas.height * 0.7;
+            const bgHeight = canvas.height * 0.3;
+            
+            ctx.strokeStyle = '#8B4513';
+            ctx.lineWidth = 1.5;
+            
+            // Draw bricks in staggered pattern
+            for (let row = 0; row < Math.ceil(bgHeight / brickHeight) + 1; row++) {
+                const offset = (row % 2) * (brickWidth / 2);
+                for (let col = -1; col < Math.ceil((canvas.width + brickWidth) / brickWidth); col++) {
+                    const x = col * brickWidth + offset;
+                    const y = bgStartY + row * brickHeight;
+                    
+                    ctx.strokeRect(x, y, brickWidth, brickHeight);
+                    
+                    // Add subtle shading to bricks
+                    if ((row + col) % 2 === 0) {
+                        ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
+                        ctx.fillRect(x + 1, y + 1, brickWidth - 2, brickHeight - 2);
+                    } else {
+                        ctx.fillStyle = 'rgba(255, 255, 255, 0.04)';
+                        ctx.fillRect(x + 1, y + 1, brickWidth - 2, brickHeight - 2);
+                    }
+                }
+            }
+            
+            // Add mortar (grout) lines highlight
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = 0.5;
+            for (let row = 0; row < Math.ceil(bgHeight / brickHeight) + 1; row++) {
+                const offset = (row % 2) * (brickWidth / 2);
+                for (let col = -1; col < Math.ceil((canvas.width + brickWidth) / brickWidth); col++) {
+                    const x = col * brickWidth + offset;
+                    const y = bgStartY + row * brickHeight;
+                    
+                    ctx.strokeRect(x, y, brickWidth, brickHeight);
+                }
+            }
+
+            clouds.forEach(cloud => drawCloud(cloud.x, cloud.y, cloud.size));
+
+            platforms.forEach(platform => drawPlatform(platform));
+            drawCastle();
+            drawFlagPole();
+            drawPrince();
+            enemies.forEach(enemy => drawEnemy(enemy));
+            hearts.forEach(heart => drawHeart(heart));
+            drawPrincess();
+            drawParticles();
+
+            if (gameState === 'victory') {
+                ctx.font = '30px Arial';
+                ctx.fillText('💕', princess.x + 10, princess.y - 20);
+                ctx.fillText('💕', prince.x + 10, prince.y - 20);
+            }
+
+            // Adventure mode progress indicator
+            if (gameState === 'playing') {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                ctx.fillRect(10, canvas.height - 30, 200, 20);
+                
+                const progress = (princess.x / (castle.x - 50)) * 200;
+                ctx.fillStyle = '#FFD700';
+                ctx.fillRect(10, canvas.height - 30, Math.min(progress, 200), 20);
+                
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(10, canvas.height - 30, 200, 20);
+                
+                ctx.fillStyle = '#fff';
+                ctx.font = '10px "Press Start 2P"';
+                ctx.fillText('🏰', 215, canvas.height - 16);
+            }
+        }
+
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        gameLoop();
+    </script>
+</body>
+</html>
