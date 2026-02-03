@@ -2,6 +2,238 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 ctx.imageSmoothingEnabled = false;
 
+// Audio System
+class SoundGenerator {
+    constructor() {
+        this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        this.masterVolume = 0.3;
+    }
+
+    playNote(frequency, duration, type = 'sine', volume = 0.3) {
+        const osc = this.audioContext.createOscillator();
+        const gain = this.audioContext.createGain();
+        
+        osc.connect(gain);
+        gain.connect(this.audioContext.destination);
+        
+        osc.frequency.value = frequency;
+        osc.type = type;
+        gain.gain.value = volume * this.masterVolume;
+        
+        osc.start(this.audioContext.currentTime);
+        osc.stop(this.audioContext.currentTime + duration);
+        
+        // Fade out
+        gain.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + duration);
+    }
+
+    jumpSound() {
+        this.playNote(400, 0.1, 'square');
+        this.playNote(600, 0.15, 'square');
+    }
+
+    collectSound() {
+        this.playNote(800, 0.1, 'sine');
+        this.playNote(1200, 0.15, 'sine');
+        this.playNote(1600, 0.2, 'sine');
+    }
+
+    hitSound() {
+        this.playNote(200, 0.2, 'square');
+        this.playNote(150, 0.2, 'square');
+    }
+
+    victoryFanfare() {
+        setTimeout(() => this.playNote(523.25, 0.2, 'sine'), 0);
+        setTimeout(() => this.playNote(659.25, 0.2, 'sine'), 150);
+        setTimeout(() => this.playNote(783.99, 0.2, 'sine'), 300);
+        setTimeout(() => this.playNote(1046.50, 0.4, 'sine'), 450);
+    }
+
+    gameOverSound() {
+        this.playNote(400, 0.3, 'square');
+        setTimeout(() => this.playNote(300, 0.3, 'square'), 150);
+        setTimeout(() => this.playNote(200, 0.5, 'square'), 300);
+    }
+
+    backgroundMusicStart() {
+        // Simple retro chiptune pattern
+        this.playMusicPattern();
+    }
+
+    playMusicPattern() {
+        if (gameState !== 'playing') return;
+        
+        const pattern = [523.25, 587.33, 659.25, 783.99, 659.25, 587.33];
+        let index = 0;
+        
+        const playNext = () => {
+            if (gameState === 'playing' && index < pattern.length) {
+                this.playNote(pattern[index], 0.3, 'square', 0.15);
+                index++;
+                setTimeout(playNext, 400);
+            } else if (gameState === 'playing') {
+                index = 0;
+                setTimeout(playNext, 800);
+            }
+        };
+        
+        playNext();
+    }
+
+    summoningSound() {
+        // Magical summoning effect with ascending notes
+        this.playNote(523.25, 0.1, 'sine', 0.3);
+        setTimeout(() => this.playNote(659.25, 0.1, 'sine', 0.3), 80);
+        setTimeout(() => this.playNote(783.99, 0.1, 'sine', 0.3), 160);
+        setTimeout(() => this.playNote(1046.50, 0.3, 'sine', 0.4), 240);
+    }
+}
+
+const soundGenerator = new SoundGenerator();
+
+// Dialogue System
+class DialogueSystem {
+    constructor() {
+        this.currentDialogue = [];
+        this.currentIndex = 0;
+        this.isActive = false;
+        this.textQueue = '';
+        this.displayedText = '';
+        this.charIndex = 0;
+        this.charSpeed = 2; // frames per character
+        this.charCounter = 0;
+    }
+
+    start(dialogueArray) {
+        this.currentDialogue = dialogueArray;
+        this.currentIndex = 0;
+        this.isActive = true;
+        this.displayedText = '';
+        this.charIndex = 0;
+        this.advanceText();
+    }
+
+    advanceText() {
+        if (this.currentIndex < this.currentDialogue.length) {
+            this.textQueue = this.currentDialogue[this.currentIndex].text;
+            this.displayedText = '';
+            this.charIndex = 0;
+            this.charCounter = 0;
+            this.currentIndex++;
+        } else {
+            this.isActive = false;
+        }
+    }
+
+    update() {
+        if (!this.isActive) return;
+        
+        if (this.charIndex < this.textQueue.length) {
+            this.charCounter++;
+            if (this.charCounter >= this.charSpeed) {
+                this.displayedText += this.textQueue[this.charIndex];
+                this.charIndex++;
+                this.charCounter = 0;
+            }
+        }
+    }
+
+    skip() {
+        if (this.charIndex < this.textQueue.length) {
+            this.displayedText = this.textQueue;
+            this.charIndex = this.textQueue.length;
+        } else {
+            this.advanceText();
+        }
+    }
+
+    getCurrentSpeaker() {
+        if (this.currentIndex > 0 && this.currentIndex <= this.currentDialogue.length) {
+            return this.currentDialogue[this.currentIndex - 1].speaker;
+        }
+        return '';
+    }
+
+    isTextComplete() {
+        return this.charIndex >= this.textQueue.length;
+    }
+}
+
+const dialogueSystem = new DialogueSystem();
+
+// Gift System with Summoning Animation
+class GiftReward {
+    constructor() {
+        this.showing = false;
+        this.gifts = [
+            { name: 'FLOWERS', emoji: '🌹', x: 200, y: 250, collected: false, scale: 0, angle: 0 },
+            { name: 'SCROLL', emoji: '📜', x: 600, y: 250, collected: false, scale: 0, angle: 0 }
+        ];
+        this.animationFrame = 0;
+        this.summoningStarted = false;
+        this.summoningDuration = 60; // frames for summoning
+    }
+
+    show() {
+        this.showing = true;
+        this.animationFrame = 0;
+        this.summoningStarted = false;
+        this.gifts.forEach(g => {
+            g.collected = false;
+            g.scale = 0;
+            g.angle = 0;
+        });
+    }
+
+    hide() {
+        this.showing = false;
+    }
+
+    update() {
+        if (this.showing) {
+            this.animationFrame++;
+            
+            // Start summoning after a short delay
+            if (this.animationFrame > 20) {
+                this.summoningStarted = true;
+            }
+            
+            if (this.summoningStarted) {
+                const summonProgress = Math.min((this.animationFrame - 20) / this.summoningDuration, 1);
+                
+                // Animate each gift
+                this.gifts.forEach((gift, index) => {
+                    const delay = index * 10;
+                    const giftProgress = Math.max(0, (this.animationFrame - 20 - delay) / (this.summoningDuration - delay));
+                    
+                    if (giftProgress > 0) {
+                        // Easing function for smooth pop effect
+                        const easeProgress = Math.min(1, giftProgress * 1.2);
+                        gift.scale = Math.sin(easeProgress * Math.PI) * (easeProgress > 0.8 ? 0.95 : 1);
+                        gift.angle = easeProgress * 360;
+                        
+                        // Create summoning particles
+                        if (giftProgress < 0.5 && Math.random() < 0.3) {
+                            const particleAngle = Math.random() * Math.PI * 2;
+                            const particleSpeed = Math.random() * 2 + 1;
+                            particles.push(new Particle(
+                                gift.x,
+                                gift.y,
+                                Math.cos(particleAngle) * particleSpeed,
+                                Math.sin(particleAngle) * particleSpeed,
+                                index === 0 ? '#FFB6C1' : '#FFD700'
+                            ));
+                        }
+                    }
+                });
+            }
+        }
+    }
+}
+
+const giftReward = new GiftReward();
+
 // Game constants
 const GRAVITY = 0.6;
 const JUMP_POWER = -12;
@@ -61,6 +293,10 @@ function restartGame() {
     document.getElementById('startScreen').style.display = 'none';
     document.getElementById('gameOver').style.display = 'none';
     document.getElementById('victory').style.display = 'none';
+    document.getElementById('victoryScreen').style.display = 'none';
+    
+    // Reset victory screen flag
+    window.victoryScreenShown = false;
     
     // Start the game directly
     gameState = 'playing';
@@ -127,6 +363,9 @@ function startGame() {
     // Hide victory or game over screens
     document.getElementById('victory').style.display = 'none';
     document.getElementById('gameOver').style.display = 'none';
+    
+    // Start background music
+    soundGenerator.backgroundMusicStart();
 }
 
 // Particle system
@@ -205,8 +444,8 @@ let hearts = [
 
 // Castle
 const castle = {
-    x: 620,
-    y: 280,
+    x: 630,
+    y: 270,
     width: 160,
     height: 280
 };
@@ -237,6 +476,17 @@ const clouds = [
 const keys = {};
 
 document.addEventListener('keydown', (e) => {
+    // Handle dialogue
+    if (gameState === 'dialogue') {
+        if (e.key === ' ' || e.key === 'Enter') {
+            dialogueSystem.skip();
+            if (!dialogueSystem.isActive) {
+                gameState = 'victoryScreen';
+            }
+        }
+        return;
+    }
+    
     if (gameState !== 'playing') return;
     keys[e.key] = true;
     
@@ -244,6 +494,7 @@ document.addEventListener('keydown', (e) => {
         princess.velocityY = JUMP_POWER;
         princess.jumping = true;
         princess.onGround = false;
+        soundGenerator.jumpSound();
     }
     e.preventDefault();
 });
@@ -1556,6 +1807,7 @@ function updateHearts() {
             score += 500;
             updateScore();
             createHeartParticles(heart.x + heart.width / 2, heart.y + heart.height / 2, 15);
+            soundGenerator.collectSound();
         }
     });
 }
@@ -1616,10 +1868,12 @@ function gameOver() {
     
     lives--;
     document.getElementById('livesCount').textContent = lives;
+    soundGenerator.hitSound();
     
     if (lives <= 0) {
         gameState = 'gameOver';
         document.getElementById('gameOver').style.display = 'block';
+        soundGenerator.gameOverSound();
     } else {
         // Respawn princess at start
         princess.x = 50;
@@ -1646,7 +1900,7 @@ function victory() {
     gameState = 'victory';
     score += 1000;
     updateScore();
-    document.getElementById('victory').style.display = 'block';
+    soundGenerator.victoryFanfare();
     
     // Victory heart explosion
     for (let i = 0; i < 50; i++) {
@@ -1660,9 +1914,60 @@ function victory() {
             vx, vy, 'rgba(255, 20, 147, 1)'
         ));
     }
+    
+    // Start victory conversation after a delay
+    setTimeout(() => {
+        startVictoryConversation();
+    }, 1500);
+}
+
+function startVictoryConversation() {
+    const victoryDialogue = [
+        { speaker: 'JACQUES', text: 'You did it! You saved me!' },
+        { speaker: 'JACQUES', text: 'I knew you had it in you...' },
+        { speaker: 'JACQUES', text: 'I have a gift for you.' },
+        { speaker: 'JACQUES', text: 'These flowers are for you.' },
+        { speaker: 'JACQUES', text: 'And this scroll...' },
+        { speaker: 'JACQUES', text: 'It contains my confession.' },
+        { speaker: 'JACQUES', text: 'Happy Valentine\'s Day.' }
+    ];
+    
+    gameState = 'dialogue';
+    dialogueSystem.start(victoryDialogue);
+    giftReward.show();
+    
+    // Trigger summoning sound when gifts appear
+    setTimeout(() => {
+        if (giftReward.summoningStarted && gameState === 'dialogue') {
+            soundGenerator.summoningSound();
+        }
+    }, 500);
+}
+
+function showVictoryScreen() {
+    document.getElementById('victoryScreen').style.display = 'flex';
+    // Add your confession message here
+    // You can update the confessionMessage element with your custom text
 }
 
 function update() {
+    if (gameState === 'dialogue') {
+        dialogueSystem.update();
+        giftReward.update();
+        updateParticles();
+        return;
+    }
+    
+    if (gameState === 'victoryScreen') {
+        // Show victory screen once
+        if (!window.victoryScreenShown) {
+            window.victoryScreenShown = true;
+            showVictoryScreen();
+        }
+        updateParticles();
+        return;
+    }
+    
     if (gameState !== 'playing') {
         updateParticles();
         return;
@@ -1679,6 +1984,14 @@ function update() {
 }
 
 function draw() {
+    // Hide score display during dialogue and victory screen
+    const scoreDisplay = document.getElementById('score');
+    if (gameState === 'dialogue' || gameState === 'victoryScreen') {
+        scoreDisplay.style.display = 'none';
+    } else {
+        scoreDisplay.style.display = 'block';
+    }
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     const skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height * 0.7);
@@ -1747,6 +2060,19 @@ function draw() {
     drawPrincess();
     drawParticles();
 
+    // Draw focus overlay during dialogue/victory
+    if (gameState === 'dialogue' || gameState === 'victoryScreen') {
+        ctx.fillStyle = 'rgba(60, 60, 60, 0.85)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    if (gameState === 'dialogue') {
+        drawDialogueBox();
+        if (giftReward.showing) {
+            drawGifts();
+        }
+    }
+
     if (gameState === 'victory') {
         ctx.font = '30px Arial';
         ctx.fillText('💕', princess.x + 10, princess.y - 20);
@@ -1754,7 +2080,7 @@ function draw() {
     }
 
     // Adventure mode progress indicator
-    if (gameState === 'playing') {
+    if (gameState === 'playing' && gameState !== 'dialogue' && gameState !== 'victoryScreen') {
         ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
         ctx.fillRect(10, canvas.height - 30, 200, 20);
         
@@ -1770,6 +2096,182 @@ function draw() {
         ctx.font = '10px "Press Start 2P"';
         ctx.fillText('🏰', 215, canvas.height - 16);
     }
+}
+
+function drawDialogueBox() {
+    const boxY = canvas.height - 150;
+    const boxHeight = 140;
+    const padding = 20;
+    
+    // Dialogue box background - darker
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.95)';
+    ctx.fillRect(10, boxY, canvas.width - 20, boxHeight);
+    
+    // Dialogue box border
+    ctx.strokeStyle = '#FFD700';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(10, boxY, canvas.width - 20, boxHeight);
+    
+    // Speaker name - proper alignment
+    ctx.fillStyle = '#FFD700';
+    ctx.font = 'bold 16px "Press Start 2P"';
+    ctx.textAlign = 'left';
+    ctx.fillText(dialogueSystem.getCurrentSpeaker(), padding + 15, boxY + 28);
+    
+    // Dialogue text - better alignment
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = '11px "Press Start 2P"';
+    const textStartX = padding + 15;
+    const textStartY = boxY + 55;
+    const maxWidth = canvas.width - 80;
+    const lineHeight = 20;
+    
+    // Better text wrapping with improved alignment
+    const words = dialogueSystem.displayedText.split(' ');
+    let line = '';
+    let currentY = textStartY;
+    
+    for (let i = 0; i < words.length; i++) {
+        const testLine = line + words[i] + ' ';
+        const metrics = ctx.measureText(testLine);
+        
+        if (metrics.width > maxWidth && i > 0) {
+            ctx.textAlign = 'left';
+            ctx.fillText(line.trim(), textStartX, currentY);
+            line = words[i] + ' ';
+            currentY += lineHeight;
+        } else {
+            line = testLine;
+        }
+    }
+    ctx.textAlign = 'left';
+    ctx.fillText(line.trim(), textStartX, currentY);
+    
+    // Continue indicator (blinking arrow) - better positioned
+    if (dialogueSystem.isTextComplete() && Math.floor(frameCount / 15) % 2 === 0) {
+        ctx.fillStyle = '#FFD700';
+        ctx.font = '14px "Press Start 2P"';
+        ctx.textAlign = 'center';
+        ctx.fillText('▼', canvas.width / 2, canvas.height - 18);
+    }
+}
+
+function drawGifts() {
+    if (!giftReward.showing) return;
+    
+    ctx.save();
+    
+    // Draw summoning effect/portal
+    if (giftReward.summoningStarted) {
+        drawSummoningPortal();
+    }
+    
+    // Draw gifts with animation
+    giftReward.gifts.forEach((gift, index) => {
+        if (gift.scale > 0) {
+            ctx.save();
+            
+            // Translate to gift position
+            ctx.translate(gift.x, gift.y);
+            
+            // Rotation effect
+            ctx.rotate((gift.angle * Math.PI) / 180);
+            
+            // Scale effect
+            ctx.scale(gift.scale, gift.scale);
+            
+            // Draw emoji
+            ctx.font = 'bold 60px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // Add glow effect
+            if (gift.scale > 0.5) {
+                ctx.globalAlpha = 0.3;
+                ctx.fillStyle = index === 0 ? '#FFB6C1' : '#FFD700';
+                for (let i = 0; i < 3; i++) {
+                    ctx.globalAlpha = 0.1;
+                    ctx.fillText(gift.emoji, i * 2, 0);
+                }
+                ctx.globalAlpha = 1;
+            }
+            
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillText(gift.emoji, 0, 0);
+            
+            ctx.restore();
+            
+            // Draw label when fully appeared
+            if (gift.scale > 0.8) {
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = '12px "Press Start 2P"';
+                ctx.textAlign = 'center';
+                ctx.fillText(gift.name, gift.x, gift.y + 60);
+            }
+        }
+    });
+    
+    ctx.restore();
+}
+
+// Draw summoning portal effect
+function drawSummoningPortal() {
+    const centerX = 400;
+    const centerY = 280;
+    const portalProgress = Math.min((giftReward.animationFrame - 20) / 30, 1);
+    
+    // Pixelated portal rings
+    for (let ring = 0; ring < 3; ring++) {
+        ctx.save();
+        
+        const radius = 40 + ring * 30;
+        const alpha = (1 - portalProgress) * (0.6 - ring * 0.15);
+        const rotation = (frameCount * 0.1) + ring * (Math.PI / 1.5);
+        
+        ctx.globalAlpha = alpha;
+        ctx.strokeStyle = ring === 0 ? '#FFB6C1' : '#FFD700';
+        ctx.lineWidth = 2;
+        
+        // Draw pixelated circle using lines instead of arc for retro feel
+        ctx.beginPath();
+        const pixelSize = 8;
+        const segments = Math.ceil((radius * 2 * Math.PI) / pixelSize);
+        
+        for (let i = 0; i < segments; i++) {
+            const angle = (i / segments) * Math.PI * 2 + rotation;
+            const x = centerX + Math.cos(angle) * radius;
+            const y = centerY + Math.sin(angle) * radius;
+            
+            // Draw small squares for pixelated effect
+            const pixelX = Math.round(x / pixelSize) * pixelSize;
+            const pixelY = Math.round(y / pixelSize) * pixelSize;
+            
+            if (i === 0) {
+                ctx.moveTo(pixelX, pixelY);
+            } else {
+                ctx.lineTo(pixelX, pixelY);
+            }
+        }
+        ctx.closePath();
+        ctx.stroke();
+        
+        ctx.restore();
+    }
+    
+    // Center summoning burst
+    ctx.save();
+    ctx.globalAlpha = Math.sin(frameCount * 0.1) * 0.5;
+    ctx.fillStyle = '#FFFFFF';
+    
+    for (let i = 0; i < 4; i++) {
+        const angle = (i / 4) * Math.PI * 2;
+        const burstX = centerX + Math.cos(angle) * 20 * portalProgress;
+        const burstY = centerY + Math.sin(angle) * 20 * portalProgress;
+        
+        ctx.fillRect(burstX - 3, burstY - 3, 6, 6);
+    }
+    
+    ctx.restore();
 }
 
 function gameLoop() {
