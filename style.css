@@ -338,129 +338,6 @@ button:active {
     background: #fff;
     color: #000;
 }
-/* Chest Prompt Styles */
-#chestPrompt {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 2000;
-}
-
-.chestBox {
-    position: relative;
-    background: linear-gradient(135deg, #2a0845 0%, #1a0033 100%);
-    border: 4px solid #FFD700;
-    padding: 60px 80px;
-    text-align: center;
-    box-shadow: 0 0 60px rgba(255, 215, 0, 0.8), inset 0 0 30px rgba(255, 215, 0, 0.3);
-    animation: chestBoxAppear 0.6s ease-out;
-}
-
-@keyframes chestBoxAppear {
-    from {
-        opacity: 0;
-        transform: scale(0.5) rotateZ(-5deg);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1) rotateZ(0deg);
-    }
-}
-
-.pixelatedChest {
-    font-size: 120px;
-    margin-bottom: 30px;
-    animation: chestBounce 0.6s ease-out;
-    filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.6));
-}
-
-@keyframes chestBounce {
-    0% {
-        transform: translateY(-50px);
-        opacity: 0;
-    }
-    50% {
-        transform: translateY(10px);
-    }
-    100% {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
-
-.chestText {
-    color: #FFB6C1;
-    font-size: 14px;
-    margin: 20px 0;
-    letter-spacing: 2px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-}
-
-.openButton {
-    background: linear-gradient(135deg, #FF69B4 0%, #FF1493 100%);
-    color: #fff;
-    border: 3px solid #FFD700;
-    padding: 15px 50px;
-    font-family: 'Press Start 2P', cursive;
-    font-size: 14px;
-    cursor: pointer;
-    margin-top: 30px;
-    transition: all 0.3s ease;
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-}
-
-.openButton:hover {
-    transform: scale(1.1);
-    box-shadow: 0 0 40px rgba(255, 215, 0, 0.8);
-    background: linear-gradient(135deg, #FF1493 0%, #FF69B4 100%);
-}
-
-.openButton:active {
-    transform: scale(0.95);
-}
-
-.closeButton {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    width: 45px;
-    height: 45px;
-    padding: 0;
-    background: linear-gradient(135deg, #FF69B4 0%, #FF1493 100%);
-    border: 3px solid #FFD700;
-    color: #fff;
-    font-size: 24px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0;
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-    transition: all 0.3s ease;
-}
-
-.closeButton:hover {
-    transform: scale(1.15);
-    box-shadow: 0 0 40px rgba(255, 215, 0, 0.8);
-}
-
-.closeButton:active {
-    transform: scale(0.9);
-}
-
-.claimTitle {
-    color: #FFD700;
-    font-size: 16px;
-    margin: 0 0 20px 0;
-    letter-spacing: 2px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-}
 
 /* Confirmation Dialog */
 #confirmDialog {
@@ -469,21 +346,29 @@ button:active {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(0, 0, 0, 0.7);
     display: none;
     justify-content: center;
     align-items: center;
     z-index: 2001;
+    pointer-events: auto;
+}
+
+#confirmDialog * {
+    pointer-events: auto;
 }
 
 .confirmBox {
     position: relative;
-    background: linear-gradient(135deg, #8B0000 0%, #4a0000 100%);
-    border: 4px solid #FFD700;
-    padding: 60px 80px;
+    background: linear-gradient(135deg, #6B0000 0%, #3a0000 50%, #1a0000 100%);
+    border: 6px solid #FFD700;
+    border-radius: 15px;
+    padding: 50px 100px 60px 100px;
     text-align: center;
-    box-shadow: 0 0 60px rgba(255, 215, 0, 0.8), inset 0 0 30px rgba(255, 215, 0, 0.3);
+    box-shadow: 0 0 120px rgba(255, 215, 0, 1), 0 0 80px rgba(255, 215, 0, 0.7), 0 0 40px rgba(220, 20, 60, 0.5), inset 0 0 40px rgba(255, 215, 0, 0.4), inset 0 0 20px rgba(220, 20, 60, 0.2);
     animation: confirmBoxAppear 0.6s ease-out;
+    pointer-events: auto;
+    cursor: default;
 }
 
 @keyframes confirmBoxAppear {
@@ -501,37 +386,48 @@ button:active {
     position: absolute;
     top: 15px;
     right: 15px;
-    width: 45px;
-    height: 45px;
+    width: 50px;
+    height: 50px;
     padding: 0;
-    background: linear-gradient(135deg, #FF69B4 0%, #FF1493 100%);
+    background: linear-gradient(135deg, #FF1493 0%, #FF69B4 100%);
     border: 3px solid #FFD700;
     color: #fff;
-    font-size: 24px;
+    font-size: 28px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0;
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-    transition: all 0.3s ease;
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.7), 0 0 15px rgba(255, 20, 147, 0.5);
+    transition: all 0.2s ease;
 }
 
 .confirmCloseButton:hover {
-    transform: scale(1.15);
-    box-shadow: 0 0 40px rgba(255, 215, 0, 0.8);
+    transform: scale(1.2);
+    box-shadow: 0 0 40px rgba(255, 215, 0, 1), 0 0 25px rgba(255, 20, 147, 0.8);
 }
 
 .confirmCloseButton:active {
-    transform: scale(0.9);
+    transform: scale(0.92);
 }
 
 .confirmTitle {
     color: #FFD700;
-    font-size: 18px;
+    font-size: 20px;
     margin: 0 0 15px 0;
-    letter-spacing: 2px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    letter-spacing: 3px;
+    text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.9), 0 0 15px rgba(255, 215, 0, 0.6);
+    font-weight: bold;
+    animation: titleGlow 2s ease-in-out infinite;
+}
+
+@keyframes titleGlow {
+    0%, 100% {
+        text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.9), 0 0 15px rgba(255, 215, 0, 0.6);
+    }
+    50% {
+        text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.9), 0 0 25px rgba(255, 215, 0, 1);
+    }
 }
 
 .confirmText {
@@ -545,24 +441,83 @@ button:active {
 .yesButton {
     background: linear-gradient(135deg, #00FF00 0%, #00CC00 100%);
     color: #000;
-    border: 3px solid #FFD700;
-    padding: 15px 50px;
+    border: 4px solid #FFD700;
+    padding: 18px 60px;
     font-family: 'Press Start 2P', cursive;
     font-size: 14px;
     cursor: pointer;
-    margin-top: 30px;
-    transition: all 0.3s ease;
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    margin-top: 25px;
+    transition: all 0.2s ease;
+    box-shadow: 0 0 30px rgba(0, 255, 0, 0.8), 0 0 15px rgba(255, 215, 0, 0.6);
+    animation: buttonPulse 2s ease-in-out infinite;
+}
+
+@keyframes buttonPulse {
+    0%, 100% {
+        box-shadow: 0 0 30px rgba(0, 255, 0, 0.8), 0 0 15px rgba(255, 215, 0, 0.6);
+    }
+    50% {
+        box-shadow: 0 0 50px rgba(0, 255, 0, 1), 0 0 25px rgba(255, 215, 0, 1);
+    }
 }
 
 .yesButton:hover {
-    transform: scale(1.1);
-    box-shadow: 0 0 40px rgba(255, 215, 0, 0.8);
+    transform: scale(1.12);
+    box-shadow: 0 0 50px rgba(0, 255, 0, 1), 0 0 25px rgba(255, 215, 0, 1);
     background: linear-gradient(135deg, #00CC00 0%, #00FF00 100%);
+    animation: none;
 }
 
 .yesButton:active {
-    transform: scale(0.95);
+    transform: scale(0.98);
+}
+
+.noButton {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    background: linear-gradient(135deg, #FF6666 0%, #FF3333 100%);
+    color: #fff;
+    border: 4px solid #FFD700;
+    padding: 18px 60px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 0 30px rgba(255, 50, 50, 0.8), 0 0 15px rgba(255, 215, 0, 0.6);
+    animation: buttonPulse 2s ease-in-out infinite;
+}
+
+.noButton:hover {
+    transform: scale(1.12);
+    box-shadow: 0 0 50px rgba(255, 50, 50, 1), 0 0 25px rgba(255, 215, 0, 1);
+    background: linear-gradient(135deg, #FF3333 0%, #FF6666 100%);
+    animation: none;
+}
+
+.noButton:active {
+    transform: scale(0.98);
+}
+
+/* Chest Opening Screen */
+#chestOpeningScreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    display: none;
+    z-index: 2000;
+}
+
+#chestCanvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
 }
 
 /* Flower Bouquet Screen */

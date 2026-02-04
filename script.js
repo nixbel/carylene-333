@@ -166,9 +166,7 @@ const dialogueSystem = new DialogueSystem();
 class GiftReward {
     constructor() {
         this.showing = false;
-        this.gifts = [
-            { name: 'CHEST', type: 'chest', x: 400, y: 250, collected: false, scale: 0, angle: 0, opened: false, openProgress: 0 }
-        ];
+        this.gifts = [];
         this.animationFrame = 0;
         this.summoningStarted = false;
         this.summoningDuration = 60; // frames for summoning
@@ -184,10 +182,6 @@ class GiftReward {
             g.collected = false;
             g.scale = 0;
             g.angle = 0;
-            if (g.type === 'chest') {
-                g.opened = false;
-                g.openProgress = 0;
-            }
         });
     }
 
@@ -217,19 +211,6 @@ class GiftReward {
                         const easeProgress = Math.min(1, giftProgress * 1.2);
                         gift.scale = Math.sin(easeProgress * Math.PI) * (easeProgress > 0.8 ? 0.95 : 1);
                         gift.angle = easeProgress * 360;
-                        
-                        // Open chest after it fully appears
-                        if (gift.type === 'chest' && easeProgress > 0.8) {
-                            gift.opened = true;
-                            gift.openProgress = Math.min((easeProgress - 0.8) / 0.2, 1);
-                        }
-                        
-                        // Show letter when chest is opening
-                        if (gift.type === 'chest' && gift.openProgress > 0.5 && !this.letterShown) {
-                            this.letterShown = true;
-                            // Show confession on the letter
-                            showConfessionLetter();
-                        }
                         
                         // Create summoning particles
                         if (giftProgress < 0.5 && Math.random() < 0.3) {
@@ -1940,33 +1921,41 @@ function victory() {
 }
 
 function startVictoryConversation() {
-    const victoryDialogue = [
-        { speaker: 'PRINCE ???:', text: 'You did it! You saved me!' },
-        { speaker: 'PRINCE ???:', text: 'I knew you had it in you...' },
-        { speaker: 'PRINCE ???:', text: 'I have a gift for you.' },
-        { speaker: 'JACQUES:', text: 'Please accept these tokens of my affection.' }
-    ];
-    
-    gameState = 'dialogue';
-    dialogueSystem.start(victoryDialogue);
-    giftReward.show();
-    
-    // Trigger summoning sound when gifts appear
-    setTimeout(() => {
-        if (giftReward.summoningStarted && gameState === 'dialogue') {
-            soundGenerator.summoningSound();
-        }
-    }, 500);
+    // Fetch conversation data from Flask backend
+    fetch('/api/conversation/start', { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            gameState = 'dialogue';
+            dialogueSystem.start(data.dialogues);
+            giftReward.show();
+            
+            // Trigger summoning sound when gifts appear
+            setTimeout(() => {
+                if (giftReward.summoningStarted && gameState === 'dialogue') {
+                    soundGenerator.summoningSound();
+                }
+            }, 500);
 
-    // After dialogue completes, show chest prompt
-    setTimeout(() => {
-        if (gameState === 'dialogue' && dialogueSystem.isTextComplete()) {
-            gameState = 'chestPrompt';
-            document.getElementById('chestPrompt').style.display = 'flex';
-        }
-    }, 8000);
+            // Check every 500ms if dialogue has ended
+            function waitForDialogueEnd() {
+                if (!dialogueSystem.isActive && gameState === 'dialogue') {
+                    gameState = 'victory';
+                    
+                    // Claim reward from backend
+                    fetch('/api/reward/claim', { method: 'POST' })
+                        .then(response => response.json())
+                        .then(claimData => {
+                            document.getElementById('closeBtn').style.transform = 'translate(0, 0)';
+                        });
+                } else if (gameState === 'dialogue') {
+                    setTimeout(waitForDialogueEnd, 500);
+                }
+            }
+            
+            waitForDialogueEnd();
+        })
+        .catch(error => console.error('Error fetching conversation:', error));
 }
-
 
 function showVictoryScreen() {
     document.getElementById('victoryScreen').style.display = 'flex';
@@ -2020,9 +2009,9 @@ function update() {
 }
 
 function draw() {
-    // Hide score display during dialogue, victory screen, and chest prompts
+    // Hide score display during dialogue and victory screen
     const scoreDisplay = document.getElementById('score');
-    if (gameState === 'dialogue' || gameState === 'victoryScreen' || gameState === 'chestPrompt') {
+    if (gameState === 'dialogue' || gameState === 'victoryScreen') {
         scoreDisplay.style.display = 'none';
     } else {
         scoreDisplay.style.display = 'block';
@@ -2210,37 +2199,30 @@ function drawGifts() {
             // Translate to gift position
             ctx.translate(gift.x, gift.y);
             
-            // Rotation effect (only for flowers)
-            if (!gift.type || gift.type !== 'chest') {
-                ctx.rotate((gift.angle * Math.PI) / 180);
-            }
+            // Rotation effect
+            ctx.rotate((gift.angle * Math.PI) / 180);
             
             // Scale effect
             ctx.scale(gift.scale, gift.scale);
             
-            if (gift.type === 'chest') {
-                // Draw chest
-                drawChest(gift);
-            } else {
-                // Draw emoji (flowers)
-                ctx.font = 'bold 60px Arial';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                
-                // Add glow effect
-                if (gift.scale > 0.5) {
-                    ctx.globalAlpha = 0.3;
-                    ctx.fillStyle = '#FFB6C1';
-                    for (let i = 0; i < 3; i++) {
-                        ctx.globalAlpha = 0.1;
-                        ctx.fillText(gift.emoji, i * 2, 0);
-                    }
-                    ctx.globalAlpha = 1;
+            // Draw emoji (flowers)
+            ctx.font = 'bold 60px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // Add glow effect
+            if (gift.scale > 0.5) {
+                ctx.globalAlpha = 0.3;
+                ctx.fillStyle = '#FFB6C1';
+                for (let i = 0; i < 3; i++) {
+                    ctx.globalAlpha = 0.1;
+                    ctx.fillText(gift.emoji, i * 2, 0);
                 }
-                
-                ctx.fillStyle = '#FFFFFF';
-                ctx.fillText(gift.emoji, 0, 0);
+                ctx.globalAlpha = 1;
             }
+            
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillText(gift.emoji, 0, 0);
             
             ctx.restore();
             
@@ -2253,46 +2235,6 @@ function drawGifts() {
             }
         }
     });
-    
-    ctx.restore();
-}
-
-function drawChest(chest) {
-    ctx.save();
-    
-    // Draw chest body
-    ctx.fillStyle = '#8B4513';
-    ctx.fillRect(-30, -20, 60, 35);
-    
-    // Draw chest border
-    ctx.strokeStyle = '#654321';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(-30, -20, 60, 35);
-    
-    // Draw chest lid
-    const lidRotation = chest.opened ? -chest.openProgress * 0.5 : 0;
-    ctx.save();
-    ctx.translate(0, -20);
-    ctx.rotate(lidRotation);
-    
-    ctx.fillStyle = '#A0522D';
-    ctx.fillRect(-30, -8, 60, 8);
-    ctx.strokeStyle = '#654321';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(-30, -8, 60, 8);
-    
-    // Draw lock
-    ctx.fillStyle = '#FFD700';
-    ctx.beginPath();
-    ctx.arc(0, -4, 3, 0, Math.PI * 2);
-    ctx.fill();
-    
-    ctx.restore();
-    
-    // Draw shine effect
-    ctx.globalAlpha = 0.3;
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(-28, -18, 20, 10);
     
     ctx.restore();
 }
@@ -2421,37 +2363,63 @@ function randomizeConfirmCloseButton() {
     confirmCloseBtn.style.transform = `translate(${randomX}px, ${randomY}px)`;
 }
 
-function showConfirmDialog() {
-    document.getElementById('chestPrompt').style.display = 'none';
-    document.getElementById('confirmDialog').style.display = 'flex';
+function randomizeNoButton() {
+    const noBtn = document.getElementById('noBtn');
+    if (noBtn) {
+        const randomX = Math.random() * 300 - 150;
+        const randomY = Math.random() * 300 - 150;
+        noBtn.style.transform = `translate(${randomX}px, ${randomY}px)`;
+    }
 }
 
-function closeChestPrompt() {
-    document.getElementById('chestPrompt').style.display = 'none';
-    gameState = 'playing';
+function showConfirmDialog() {
+    // Fetch confirmation dialog from backend
+    fetch('/api/reward/confirm', { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('confirmDialog').style.display = 'flex';
+            // Reset button positions
+            document.getElementById('confirmCloseBtn').style.transform = 'translate(0, 0)';
+            document.getElementById('noBtn').style.transform = 'translate(0, 0)';
+        })
+        .catch(error => console.error('Error fetching confirm dialog:', error));
 }
 
 function closeConfirmDialog() {
-    document.getElementById('confirmDialog').style.display = 'none';
-    document.getElementById('chestPrompt').style.display = 'flex';
+    // Don't close - X button just moves
+    randomizeConfirmCloseButton();
 }
 
 function openChestSequence() {
-    document.getElementById('confirmDialog').style.display = 'none';
-    document.getElementById('chestPrompt').style.display = 'none';
-    document.getElementById('gameCanvas').style.display = 'none';
-    document.getElementById('flowerBouquetScreen').style.display = 'block';
+    // Notify backend that chest is being opened
+    fetch('/api/reward/open', { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Hide all dialogs
+                document.getElementById('confirmDialog').style.display = 'none';
+                document.getElementById('gameCanvas').style.display = 'none';
+                document.getElementById('flowerBouquetScreen').style.display = 'block';
 
-    bouquetCtx = document.getElementById('bouquetCanvas').getContext('2d');
-    bouquetAnimationFrame = 0;
-    flowers = [];
-    bouquetParticles = [];
-    bouquetStartTime = Date.now();
-    gameState = 'flowerBouquet';
+                // Initialize bouquet animation
+                bouquetCtx = document.getElementById('bouquetCanvas').getContext('2d');
+                bouquetAnimationFrame = 0;
+                flowers = [];
+                bouquetParticles = [];
+                bouquetStartTime = Date.now();
+                gameState = 'flowerBouquet';
 
-    // Create beautiful bouquet
-    createFlowerBouquet();
-    animateBouquet();
+                // Create beautiful bouquet
+                createFlowerBouquet();
+                animateBouquet();
+
+                // After 5 seconds, redirect to confession page
+                setTimeout(() => {
+                    window.location.href = data.next_page;
+                }, 5000);
+            }
+        })
+        .catch(error => console.error('Error opening chest:', error));
 }
 
 function createFlowerBouquet() {
