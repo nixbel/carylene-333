@@ -79,6 +79,29 @@
                 <button onclick="location.reload()">BACK TO MENU</button>
             </div>
         </div>
+
+        <div id="chestPrompt" style="display:none;">
+            <div class="chestBox">
+                <button onclick="randomizeCloseButton()" class="closeButton" id="closeBtn">✕</button>
+                <p class="claimTitle">CLAIM YOUR REWARD</p>
+                <div class="pixelatedChest">🎁</div>
+                <p class="chestText">YOU RECEIVE A <span style="font-weight: bold;">CHEST</span></p>
+                <button onclick="showConfirmDialog()" class="openButton">OPEN NOW</button>
+            </div>
+        </div>
+
+        <div id="confirmDialog" style="display:none;">
+            <div class="confirmBox">
+                <button onclick="randomizeConfirmCloseButton()" class="confirmCloseButton" id="confirmCloseBtn">✕</button>
+                <p class="confirmTitle">ARE YOU SURE?</p>
+                <p class="confirmText">Open the chest to receive your gift</p>
+                <button onclick="openChestSequence()" class="yesButton">YES</button>
+            </div>
+        </div>
+
+        <div id="flowerBouquetScreen" style="display:none;">
+            <canvas id="bouquetCanvas" width="800" height="600"></canvas>
+        </div>
     </div>
 
     <script src="script.js"></script>

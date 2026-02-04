@@ -338,3 +338,250 @@ button:active {
     background: #fff;
     color: #000;
 }
+/* Chest Prompt Styles */
+#chestPrompt {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.chestBox {
+    position: relative;
+    background: linear-gradient(135deg, #2a0845 0%, #1a0033 100%);
+    border: 4px solid #FFD700;
+    padding: 60px 80px;
+    text-align: center;
+    box-shadow: 0 0 60px rgba(255, 215, 0, 0.8), inset 0 0 30px rgba(255, 215, 0, 0.3);
+    animation: chestBoxAppear 0.6s ease-out;
+}
+
+@keyframes chestBoxAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.5) rotateZ(-5deg);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) rotateZ(0deg);
+    }
+}
+
+.pixelatedChest {
+    font-size: 120px;
+    margin-bottom: 30px;
+    animation: chestBounce 0.6s ease-out;
+    filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.6));
+}
+
+@keyframes chestBounce {
+    0% {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    50% {
+        transform: translateY(10px);
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.chestText {
+    color: #FFB6C1;
+    font-size: 14px;
+    margin: 20px 0;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.openButton {
+    background: linear-gradient(135deg, #FF69B4 0%, #FF1493 100%);
+    color: #fff;
+    border: 3px solid #FFD700;
+    padding: 15px 50px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 30px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+.openButton:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 40px rgba(255, 215, 0, 0.8);
+    background: linear-gradient(135deg, #FF1493 0%, #FF69B4 100%);
+}
+
+.openButton:active {
+    transform: scale(0.95);
+}
+
+.closeButton {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 45px;
+    height: 45px;
+    padding: 0;
+    background: linear-gradient(135deg, #FF69B4 0%, #FF1493 100%);
+    border: 3px solid #FFD700;
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    transition: all 0.3s ease;
+}
+
+.closeButton:hover {
+    transform: scale(1.15);
+    box-shadow: 0 0 40px rgba(255, 215, 0, 0.8);
+}
+
+.closeButton:active {
+    transform: scale(0.9);
+}
+
+.claimTitle {
+    color: #FFD700;
+    font-size: 16px;
+    margin: 0 0 20px 0;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* Confirmation Dialog */
+#confirmDialog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2001;
+}
+
+.confirmBox {
+    position: relative;
+    background: linear-gradient(135deg, #8B0000 0%, #4a0000 100%);
+    border: 4px solid #FFD700;
+    padding: 60px 80px;
+    text-align: center;
+    box-shadow: 0 0 60px rgba(255, 215, 0, 0.8), inset 0 0 30px rgba(255, 215, 0, 0.3);
+    animation: confirmBoxAppear 0.6s ease-out;
+}
+
+@keyframes confirmBoxAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.5) rotateZ(-5deg);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) rotateZ(0deg);
+    }
+}
+
+.confirmCloseButton {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 45px;
+    height: 45px;
+    padding: 0;
+    background: linear-gradient(135deg, #FF69B4 0%, #FF1493 100%);
+    border: 3px solid #FFD700;
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    transition: all 0.3s ease;
+}
+
+.confirmCloseButton:hover {
+    transform: scale(1.15);
+    box-shadow: 0 0 40px rgba(255, 215, 0, 0.8);
+}
+
+.confirmCloseButton:active {
+    transform: scale(0.9);
+}
+
+.confirmTitle {
+    color: #FFD700;
+    font-size: 18px;
+    margin: 0 0 15px 0;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.confirmText {
+    color: #FFB6C1;
+    font-size: 12px;
+    margin: 0 0 30px 0;
+    letter-spacing: 1px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.yesButton {
+    background: linear-gradient(135deg, #00FF00 0%, #00CC00 100%);
+    color: #000;
+    border: 3px solid #FFD700;
+    padding: 15px 50px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 30px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+.yesButton:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 40px rgba(255, 215, 0, 0.8);
+    background: linear-gradient(135deg, #00CC00 0%, #00FF00 100%);
+}
+
+.yesButton:active {
+    transform: scale(0.95);
+}
+
+/* Flower Bouquet Screen */
+#flowerBouquetScreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    display: none;
+    z-index: 2001;
+}
+
+#bouquetCanvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+}

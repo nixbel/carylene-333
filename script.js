@@ -167,22 +167,27 @@ class GiftReward {
     constructor() {
         this.showing = false;
         this.gifts = [
-            { name: 'FLOWERS', emoji: '🌹', x: 200, y: 250, collected: false, scale: 0, angle: 0 },
-            { name: 'SCROLL', emoji: '📜', x: 600, y: 250, collected: false, scale: 0, angle: 0 }
+            { name: 'CHEST', type: 'chest', x: 400, y: 250, collected: false, scale: 0, angle: 0, opened: false, openProgress: 0 }
         ];
         this.animationFrame = 0;
         this.summoningStarted = false;
         this.summoningDuration = 60; // frames for summoning
+        this.letterShown = false;
     }
 
     show() {
         this.showing = true;
         this.animationFrame = 0;
         this.summoningStarted = false;
+        this.letterShown = false;
         this.gifts.forEach(g => {
             g.collected = false;
             g.scale = 0;
             g.angle = 0;
+            if (g.type === 'chest') {
+                g.opened = false;
+                g.openProgress = 0;
+            }
         });
     }
 
@@ -213,6 +218,19 @@ class GiftReward {
                         gift.scale = Math.sin(easeProgress * Math.PI) * (easeProgress > 0.8 ? 0.95 : 1);
                         gift.angle = easeProgress * 360;
                         
+                        // Open chest after it fully appears
+                        if (gift.type === 'chest' && easeProgress > 0.8) {
+                            gift.opened = true;
+                            gift.openProgress = Math.min((easeProgress - 0.8) / 0.2, 1);
+                        }
+                        
+                        // Show letter when chest is opening
+                        if (gift.type === 'chest' && gift.openProgress > 0.5 && !this.letterShown) {
+                            this.letterShown = true;
+                            // Show confession on the letter
+                            showConfessionLetter();
+                        }
+                        
                         // Create summoning particles
                         if (giftProgress < 0.5 && Math.random() < 0.3) {
                             const particleAngle = Math.random() * Math.PI * 2;
@@ -222,7 +240,7 @@ class GiftReward {
                                 gift.y,
                                 Math.cos(particleAngle) * particleSpeed,
                                 Math.sin(particleAngle) * particleSpeed,
-                                index === 0 ? '#FFB6C1' : '#FFD700'
+                                index === 0 ? '#FFB6C1' : '#8B4513'
                             ));
                         }
                     }
@@ -1923,13 +1941,10 @@ function victory() {
 
 function startVictoryConversation() {
     const victoryDialogue = [
-        { speaker: 'JACQUES', text: 'You did it! You saved me!' },
-        { speaker: 'JACQUES', text: 'I knew you had it in you...' },
-        { speaker: 'JACQUES', text: 'I have a gift for you.' },
-        { speaker: 'JACQUES', text: 'These flowers are for you.' },
-        { speaker: 'JACQUES', text: 'And this scroll...' },
-        { speaker: 'JACQUES', text: 'It contains my confession.' },
-        { speaker: 'JACQUES', text: 'Happy Valentine\'s Day.' }
+        { speaker: 'PRINCE ???:', text: 'You did it! You saved me!' },
+        { speaker: 'PRINCE ???:', text: 'I knew you had it in you...' },
+        { speaker: 'PRINCE ???:', text: 'I have a gift for you.' },
+        { speaker: 'JACQUES:', text: 'Please accept these tokens of my affection.' }
     ];
     
     gameState = 'dialogue';
@@ -1942,12 +1957,33 @@ function startVictoryConversation() {
             soundGenerator.summoningSound();
         }
     }, 500);
+
+    // After dialogue completes, show chest prompt
+    setTimeout(() => {
+        if (gameState === 'dialogue' && dialogueSystem.isTextComplete()) {
+            gameState = 'chestPrompt';
+            document.getElementById('chestPrompt').style.display = 'flex';
+        }
+    }, 8000);
 }
+
 
 function showVictoryScreen() {
     document.getElementById('victoryScreen').style.display = 'flex';
-    // Add your confession message here
-    // You can update the confessionMessage element with your custom text
+    
+    // Display confession message from the letter
+    const confessionMessage = document.getElementById('confessionMessage');
+    confessionMessage.innerHTML = `
+        <em>My Dearest Carylene,</em><br><br>
+        
+        Happy Valentine's Day! 💕<br><br>
+        
+        On this special day, I wanted to tell you something that has been on my heart for so long.
+        You mean the world to me, and being able to share this day with you makes me incredibly happy.<br><br>
+        
+        With all my love,<br>
+        Jacques
+    `;
 }
 
 function update() {
@@ -1984,9 +2020,9 @@ function update() {
 }
 
 function draw() {
-    // Hide score display during dialogue and victory screen
+    // Hide score display during dialogue, victory screen, and chest prompts
     const scoreDisplay = document.getElementById('score');
-    if (gameState === 'dialogue' || gameState === 'victoryScreen') {
+    if (gameState === 'dialogue' || gameState === 'victoryScreen' || gameState === 'chestPrompt') {
         scoreDisplay.style.display = 'none';
     } else {
         scoreDisplay.style.display = 'block';
@@ -2174,30 +2210,37 @@ function drawGifts() {
             // Translate to gift position
             ctx.translate(gift.x, gift.y);
             
-            // Rotation effect
-            ctx.rotate((gift.angle * Math.PI) / 180);
+            // Rotation effect (only for flowers)
+            if (!gift.type || gift.type !== 'chest') {
+                ctx.rotate((gift.angle * Math.PI) / 180);
+            }
             
             // Scale effect
             ctx.scale(gift.scale, gift.scale);
             
-            // Draw emoji
-            ctx.font = 'bold 60px Arial';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            
-            // Add glow effect
-            if (gift.scale > 0.5) {
-                ctx.globalAlpha = 0.3;
-                ctx.fillStyle = index === 0 ? '#FFB6C1' : '#FFD700';
-                for (let i = 0; i < 3; i++) {
-                    ctx.globalAlpha = 0.1;
-                    ctx.fillText(gift.emoji, i * 2, 0);
+            if (gift.type === 'chest') {
+                // Draw chest
+                drawChest(gift);
+            } else {
+                // Draw emoji (flowers)
+                ctx.font = 'bold 60px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                // Add glow effect
+                if (gift.scale > 0.5) {
+                    ctx.globalAlpha = 0.3;
+                    ctx.fillStyle = '#FFB6C1';
+                    for (let i = 0; i < 3; i++) {
+                        ctx.globalAlpha = 0.1;
+                        ctx.fillText(gift.emoji, i * 2, 0);
+                    }
+                    ctx.globalAlpha = 1;
                 }
-                ctx.globalAlpha = 1;
+                
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillText(gift.emoji, 0, 0);
             }
-            
-            ctx.fillStyle = '#FFFFFF';
-            ctx.fillText(gift.emoji, 0, 0);
             
             ctx.restore();
             
@@ -2212,6 +2255,335 @@ function drawGifts() {
     });
     
     ctx.restore();
+}
+
+function drawChest(chest) {
+    ctx.save();
+    
+    // Draw chest body
+    ctx.fillStyle = '#8B4513';
+    ctx.fillRect(-30, -20, 60, 35);
+    
+    // Draw chest border
+    ctx.strokeStyle = '#654321';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(-30, -20, 60, 35);
+    
+    // Draw chest lid
+    const lidRotation = chest.opened ? -chest.openProgress * 0.5 : 0;
+    ctx.save();
+    ctx.translate(0, -20);
+    ctx.rotate(lidRotation);
+    
+    ctx.fillStyle = '#A0522D';
+    ctx.fillRect(-30, -8, 60, 8);
+    ctx.strokeStyle = '#654321';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(-30, -8, 60, 8);
+    
+    // Draw lock
+    ctx.fillStyle = '#FFD700';
+    ctx.beginPath();
+    ctx.arc(0, -4, 3, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.restore();
+    
+    // Draw shine effect
+    ctx.globalAlpha = 0.3;
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(-28, -18, 20, 10);
+    
+    ctx.restore();
+}
+
+function showConfessionLetter() {
+    // This will be called when the chest opens
+    // The confession message will be displayed in a letter-like format
+}
+
+// Flower bouquet animation variables
+let bouquetCtx = null;
+let bouquetAnimationFrame = 0;
+let flowers = [];
+let bouquetParticles = [];
+let bouquetStartTime = 0;
+
+class BouquetFlower {
+    constructor(x, y, color, type) {
+        this.x = x;
+        this.y = y;
+        this.color = color;
+        this.type = type; // 'rose', 'tulip', 'daisy'
+        this.rotation = Math.random() * Math.PI * 2;
+        this.scale = 0;
+        this.targetScale = 0.8 + Math.random() * 0.4;
+        this.wobbleAmount = Math.random() * 0.05;
+        this.wobbleSpeed = Math.random() * 0.05 + 0.02;
+        this.baseY = y;
+    }
+
+    update(frame) {
+        // Grow flowers
+        if (this.scale < this.targetScale) {
+            this.scale += 0.02;
+        }
+
+        // Wobble movement
+        this.y = this.baseY + Math.sin(frame * this.wobbleSpeed) * this.wobbleAmount * 20;
+
+        // Gentle rotation
+        this.rotation += 0.01 * (Math.random() - 0.5);
+    }
+
+    draw(ctx) {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.rotation);
+        ctx.scale(this.scale, this.scale);
+
+        if (this.type === 'rose') {
+            drawRose(ctx, this.color);
+        } else if (this.type === 'tulip') {
+            drawTulip(ctx, this.color);
+        } else if (this.type === 'daisy') {
+            drawDaisy(ctx, this.color);
+        }
+
+        ctx.restore();
+    }
+}
+
+function drawRose(ctx, color) {
+    // Draw rose petals
+    ctx.fillStyle = color;
+    for (let i = 0; i < 8; i++) {
+        ctx.save();
+        ctx.rotate((i / 8) * Math.PI * 2);
+        ctx.fillRect(-3, -15, 6, 20);
+        ctx.restore();
+    }
+    // Center
+    ctx.fillStyle = '#FFD700';
+    ctx.beginPath();
+    ctx.arc(0, 0, 4, 0, Math.PI * 2);
+    ctx.fill();
+}
+
+function drawTulip(ctx, color) {
+    // Draw tulip petals
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(-5, 0);
+    ctx.quadraticCurveTo(-8, -15, -2, -20);
+    ctx.quadraticCurveTo(0, -18, 2, -20);
+    ctx.quadraticCurveTo(8, -15, 5, 0);
+    ctx.quadraticCurveTo(0, 5, -5, 0);
+    ctx.fill();
+    // Stem
+    ctx.strokeStyle = '#228B22';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.quadraticCurveTo(3, 10, 2, 25);
+    ctx.stroke();
+}
+
+function drawDaisy(ctx, color) {
+    // Draw daisy petals
+    ctx.fillStyle = color;
+    for (let i = 0; i < 6; i++) {
+        ctx.save();
+        ctx.rotate((i / 6) * Math.PI * 2);
+        ctx.beginPath();
+        ctx.ellipse(0, -10, 3, 8, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+    // Center
+    ctx.fillStyle = '#FFD700';
+    ctx.beginPath();
+    ctx.arc(0, 0, 3, 0, Math.PI * 2);
+    ctx.fill();
+}
+
+function randomizeCloseButton() {
+    const closeBtn = document.getElementById('closeBtn');
+    const randomX = Math.random() * 300 - 150;
+    const randomY = Math.random() * 300 - 150;
+    closeBtn.style.transform = `translate(${randomX}px, ${randomY}px)`;
+}
+
+function randomizeConfirmCloseButton() {
+    const confirmCloseBtn = document.getElementById('confirmCloseBtn');
+    const randomX = Math.random() * 300 - 150;
+    const randomY = Math.random() * 300 - 150;
+    confirmCloseBtn.style.transform = `translate(${randomX}px, ${randomY}px)`;
+}
+
+function showConfirmDialog() {
+    document.getElementById('chestPrompt').style.display = 'none';
+    document.getElementById('confirmDialog').style.display = 'flex';
+}
+
+function closeChestPrompt() {
+    document.getElementById('chestPrompt').style.display = 'none';
+    gameState = 'playing';
+}
+
+function closeConfirmDialog() {
+    document.getElementById('confirmDialog').style.display = 'none';
+    document.getElementById('chestPrompt').style.display = 'flex';
+}
+
+function openChestSequence() {
+    document.getElementById('confirmDialog').style.display = 'none';
+    document.getElementById('chestPrompt').style.display = 'none';
+    document.getElementById('gameCanvas').style.display = 'none';
+    document.getElementById('flowerBouquetScreen').style.display = 'block';
+
+    bouquetCtx = document.getElementById('bouquetCanvas').getContext('2d');
+    bouquetAnimationFrame = 0;
+    flowers = [];
+    bouquetParticles = [];
+    bouquetStartTime = Date.now();
+    gameState = 'flowerBouquet';
+
+    // Create beautiful bouquet
+    createFlowerBouquet();
+    animateBouquet();
+}
+
+function createFlowerBouquet() {
+    const centerX = 400;
+    const centerY = 350;
+
+    // Create main bouquet structure
+    const roses = [
+        { x: centerX, y: centerY - 50, color: '#FF1493', type: 'rose' },
+        { x: centerX - 30, y: centerY - 30, color: '#FF69B4', type: 'rose' },
+        { x: centerX + 30, y: centerY - 30, color: '#FF1493', type: 'rose' },
+        { x: centerX - 50, y: centerY + 10, color: '#FF69B4', type: 'rose' },
+        { x: centerX + 50, y: centerY + 10, color: '#FF1493', type: 'rose' },
+    ];
+
+    const tulips = [
+        { x: centerX - 20, y: centerY - 60, color: '#FFB6C1', type: 'tulip' },
+        { x: centerX + 20, y: centerY - 60, color: '#FFB6C1', type: 'tulip' },
+        { x: centerX - 60, y: centerY - 10, color: '#FFB6C1', type: 'tulip' },
+        { x: centerX + 60, y: centerY - 10, color: '#FFB6C1', type: 'tulip' },
+    ];
+
+    const daisies = [
+        { x: centerX - 40, y: centerY - 40, color: '#FFE4E1', type: 'daisy' },
+        { x: centerX + 40, y: centerY - 40, color: '#FFE4E1', type: 'daisy' },
+        { x: centerX - 70, y: centerY + 20, color: '#FFE4E1', type: 'daisy' },
+        { x: centerX + 70, y: centerY + 20, color: '#FFE4E1', type: 'daisy' },
+    ];
+
+    flowers = [...roses, ...tulips, ...daisies].map(f => new BouquetFlower(f.x, f.y, f.color, f.type));
+}
+
+function animateBouquet() {
+    if (!bouquetCtx) return;
+
+    bouquetAnimationFrame++;
+
+    // Clear canvas with gradient
+    const gradient = bouquetCtx.createLinearGradient(0, 0, 0, 600);
+    gradient.addColorStop(0, '#1a0033');
+    gradient.addColorStop(1, '#2d0845');
+    bouquetCtx.fillStyle = gradient;
+    bouquetCtx.fillRect(0, 0, 800, 600);
+
+    // Draw stars in background
+    drawBouquetStars(bouquetCtx, bouquetAnimationFrame);
+
+    // Update and draw flowers
+    flowers.forEach((flower, index) => {
+        flower.update(bouquetAnimationFrame + index * 5);
+        flower.draw(bouquetCtx);
+    });
+
+    // Create falling particles
+    if (bouquetAnimationFrame % 5 === 0) {
+        for (let i = 0; i < 3; i++) {
+            const flowerIndex = Math.floor(Math.random() * flowers.length);
+            const flower = flowers[flowerIndex];
+            const angle = Math.random() * Math.PI * 2;
+            const speed = Math.random() * 2 + 1;
+            bouquetParticles.push({
+                x: flower.x,
+                y: flower.y,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed - 1,
+                color: flower.color,
+                life: 100,
+                size: Math.random() * 3 + 1
+            });
+        }
+    }
+
+    // Update and draw particles
+    bouquetParticles = bouquetParticles.filter(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.05; // gravity
+        p.life--;
+
+        bouquetCtx.globalAlpha = p.life / 100;
+        bouquetCtx.fillStyle = p.color;
+        bouquetCtx.beginPath();
+        bouquetCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        bouquetCtx.fill();
+        bouquetCtx.globalAlpha = 1;
+
+        return p.life > 0;
+    });
+
+    // Draw text after flowers are visible
+    if (bouquetAnimationFrame > 40) {
+        bouquetCtx.fillStyle = '#FFB6C1';
+        bouquetCtx.font = 'bold 24px "Press Start 2P"';
+        bouquetCtx.textAlign = 'center';
+        bouquetCtx.globalAlpha = Math.min((bouquetAnimationFrame - 40) / 30, 1);
+        bouquetCtx.fillText('HAPPY VALENTINE\'S DAY', 400, 80);
+        bouquetCtx.globalAlpha = 1;
+    }
+
+    // Show "Continue" button after animation
+    if (bouquetAnimationFrame > 120) {
+        bouquetCtx.fillStyle = '#FFD700';
+        bouquetCtx.font = '16px "Press Start 2P"';
+        bouquetCtx.textAlign = 'center';
+        if (Math.floor(bouquetAnimationFrame / 20) % 2 === 0) {
+            bouquetCtx.fillText('CLICK TO CONTINUE', 400, 550);
+        }
+    }
+
+    // Continue animation or handle click
+    if (bouquetAnimationFrame < 200) {
+        requestAnimationFrame(animateBouquet);
+    } else {
+        // Setup click handler for continuation
+        document.getElementById('bouquetCanvas').onclick = () => {
+            document.getElementById('flowerBouquetScreen').style.display = 'none';
+            gameState = 'victoryScreen';
+            showVictoryScreen();
+        };
+    }
+}
+
+function drawBouquetStars(ctx, frame) {
+    ctx.fillStyle = '#FFFFFF';
+    for (let i = 0; i < 50; i++) {
+        const x = (i * 157 + frame * 0.5) % 800;
+        const y = (i * 73 + Math.sin(frame * 0.01 + i) * 10) % 600;
+        const size = Math.sin(frame * 0.02 + i) * 0.5 + 0.5;
+        ctx.globalAlpha = size * 0.6;
+        ctx.fillRect(x, y, 1, 1);
+    }
+    ctx.globalAlpha = 1;
 }
 
 // Draw summoning portal effect
