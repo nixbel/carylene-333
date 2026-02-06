@@ -418,6 +418,12 @@ button:active {
     animation: buttonPulse 0.5s ease infinite;
 }
 
+#laterBtn {
+    position: absolute;
+    transition: all 0.25s ease;
+}
+
+
 @keyframes buttonPulse {
     0%, 100% { transform: translateY(-2px) scale(1); }
     50% { transform: translateY(-2px) scale(1.05); }
@@ -796,7 +802,8 @@ button:active {
             
             <div style="display:flex; gap:20px; justify-content:center;">
     <button onclick="showConfirmDialog()">OPEN NOW</button>
-    <button onclick="closeRewardDialog()">LATER</button>
+    <button id="laterBtn" onclick="moveLaterButton()">LATER</button>
+
 </div>
 
         </div>
@@ -3461,6 +3468,25 @@ function gameLoop() {
     draw();
     requestAnimationFrame(gameLoop);
 }
+
+function moveLaterButton() {
+    const btn = document.getElementById('laterBtn');
+    const dialog = document.getElementById('rewardDialog');
+
+    const dialogRect = dialog.getBoundingClientRect();
+    const btnRect = btn.getBoundingClientRect();
+
+    // Safe random range inside dialog
+    const maxX = dialogRect.width - btnRect.width - 20;
+    const maxY = dialogRect.height - btnRect.height - 20;
+
+    const randomX = Math.random() * maxX;
+    const randomY = Math.random() * maxY;
+
+    btn.style.left = `${randomX}px`;
+    btn.style.top = `${randomY}px`;
+}
+
 
 gameLoop();
     </script>
