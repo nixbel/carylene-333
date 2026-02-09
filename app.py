@@ -124,8 +124,7 @@ def flower():
 
 # ==================== CONFESSION PAGE ====================
 
-@app.route('/flower',
-            '/confession')
+@app.route('/confession')
 def confession():
     """
     Render the final confession page with love message
