@@ -104,7 +104,7 @@ def open_reward():
     """
     return jsonify({
         'status': 'success',
-        'next_page': '/confession',
+        'next_page': '/flower',
         'animations': {
             'chest_duration': 240,  # frames (4 seconds at 60 FPS)
             'flower_duration': 200,  # frames minimum
@@ -112,9 +112,20 @@ def open_reward():
         }
     })
 
+# ==================== FLOWER PAGE ====================
+
+@app.route('/flower')
+def flower():
+    """
+    Render the beautiful glowing flower garden page
+    This appears after clicking YES, OPEN IT!
+    """
+    return render_template('flower.html')
+
 # ==================== CONFESSION PAGE ====================
 
-@app.route('/confession')
+@app.route('/flower',
+            '/confession')
 def confession():
     """
     Render the final confession page with love message
@@ -146,6 +157,7 @@ def game_status():
             '/api/reward/claim',
             '/api/reward/confirm',
             '/api/reward/open',
+            '/flower',
             '/confession'
         ]
     })
@@ -194,8 +206,8 @@ if __name__ == '__main__':
     print("   POST /api/conversation/start   - Start victory dialogue")
     print("   POST /api/reward/claim         - Claim reward")
     print("   POST /api/reward/confirm       - Confirm chest opening")
-    print("   POST /api/reward/open          - Open chest + show flowers")
-    print("   GET  /confession               - Show final message")
+    print("   POST /api/reward/open          - Open chest + redirect to flowers")
+    print("   GET  /flower                   - Show glowing flower garden GET  /confession               - Show final message")
     print("   GET  /api/game/status          - Check server status")
     print("   POST /api/game/reset           - Reset game")
     print("\n🌐 Server Information:")
