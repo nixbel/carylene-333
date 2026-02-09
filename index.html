@@ -801,7 +801,7 @@ button:active {
             </div>
             
             <div style="display:flex; gap:20px; justify-content:center;">
-    <button onclick="showConfirmDialog()">OPEN NOW</button>
+    <button onclick="showConfirmDialog()">CLAIM</button>
     <button id="laterBtn" onclick="moveLaterButton()">LATER</button>
 
 </div>
@@ -3245,27 +3245,8 @@ function openChestSequence() {
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                // Hide all dialogs
-                document.getElementById('confirmDialog').style.display = 'none';
-                document.getElementById('gameCanvas').style.display = 'none';
-                document.getElementById('flowerBouquetScreen').style.display = 'block';
-
-                // Initialize bouquet animation
-                bouquetCtx = document.getElementById('bouquetCanvas').getContext('2d');
-                bouquetAnimationFrame = 0;
-                flowers = [];
-                bouquetParticles = [];
-                bouquetStartTime = Date.now();
-                gameState = 'flowerBouquet';
-
-                // Create beautiful bouquet
-                createFlowerBouquet();
-                animateBouquet();
-
-                // After 5 seconds, redirect to confession page
-                setTimeout(() => {
-                    window.location.href = data.next_page;
-                }, 5000);
+                // Redirect directly to the flower garden page
+                window.location.href = data.next_page;
             }
         })
         .catch(error => console.error('Error opening chest:', error));

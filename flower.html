@@ -62,7 +62,7 @@
     </div>
 
     <!-- Flower 3 - Pink (Hidden Letter Flower) -->
-    <div class="flower flower--3" data-letter-flower="true" style="--flower-color: #e665a7; --flower-gradient: #bb4088, #ffa7d4; --light-color: #ff23a8;">
+    <div class="flower flower--3" style="--flower-color: #e665a7; --flower-gradient: #bb4088, #ffa7d4; --light-color: #ff23a8;">
       <div class="flower__leafs flower__leafs--3">
         <div class="flower__leaf flower__leaf--1"></div>
         <div class="flower__leaf flower__leaf--2"></div>
@@ -1334,7 +1334,9 @@
         <!-- Cat Speech Bubble -->
         <div class="cat__speech">
           <div class="cat__speech-cloud">
-            Hello Carylene! I have a flowers for you and last but not the least. The letter for you must be hidden there. Clue: It can be found at one of the objects there.
+            <strong style="color: #2d5c5e; font-size: 2vmin;">Hello Carylene!</strong> 🌸<br>
+            I have beautiful flowers for you! And last but not least... <span style="color: #ff6b9d; font-weight: 600;">a special letter</span> is hidden here.<br>
+            <em style="font-size: 1.6vmin; color: #4a9ea8;">🔍 Hint: Look for something special among the flowers...</em>
           </div>
         </div>
       </div>
@@ -3227,36 +3229,83 @@ mask-image: linear-gradient(to top, transparent 40%, #079097 80%) !important;
   position: absolute;
   bottom: 22vmin;
   left: 18vmin;
-  max-width: 45vmin;
+  max-width: 50vmin;
   z-index: 60;
+  animation: speech-appear 0.5s 5s backwards;
+}
+
+@keyframes speech-appear {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 .cat__speech-cloud {
   position: relative;
-  padding: 2vmin 3vmin;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 4vmin;
+  padding: 2.5vmin 3.5vmin;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(240, 248, 255, 0.98) 100%);
+  border-radius: 3vmin;
   box-shadow:
-    0 0 3vmin rgba(255, 255, 255, 0.7),
-    0 0 5vmin rgba(101, 230, 204, 0.7);
-  color: #0a3034;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-size: 1.6vmin;
-  line-height: 1.5;
+    0 0.5vmin 2vmin rgba(0, 0, 0, 0.15),
+    0 0 4vmin rgba(101, 230, 204, 0.6),
+    inset 0 0 2vmin rgba(255, 255, 255, 0.5);
+  color: #1a3a3d;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 1.8vmin;
+  line-height: 1.6;
+  font-weight: 500;
+  border: 0.3vmin solid rgba(101, 230, 204, 0.3);
+  animation: cloud-pulse 3s ease-in-out infinite;
 }
 
+@keyframes cloud-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0.5vmin 2vmin rgba(0, 0, 0, 0.15),
+      0 0 4vmin rgba(101, 230, 204, 0.6),
+      inset 0 0 2vmin rgba(255, 255, 255, 0.5);
+  }
+  50% {
+    box-shadow:
+      0 0.5vmin 2vmin rgba(0, 0, 0, 0.15),
+      0 0 6vmin rgba(101, 230, 204, 0.9),
+      inset 0 0 2vmin rgba(255, 255, 255, 0.5);
+  }
+}
+
+/* Speech bubble tail - larger and more prominent */
+.cat__speech-cloud::before {
+  content: "";
+  position: absolute;
+  bottom: -3.5vmin;
+  left: 6vmin;
+  width: 5vmin;
+  height: 4vmin;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(240, 248, 255, 0.98) 100%);
+  border-radius: 50%;
+  border: 0.3vmin solid rgba(101, 230, 204, 0.3);
+  border-top: none;
+  border-right: none;
+  box-shadow: 0 0 3vmin rgba(101, 230, 204, 0.5);
+}
+
+/* Second smaller bubble */
 .cat__speech-cloud::after {
   content: "";
   position: absolute;
-  bottom: -2vmin;
-  left: 5vmin;
-  width: 4vmin;
-  height: 3vmin;
-  background: rgba(255, 255, 255, 0.9);
+  bottom: -5.5vmin;
+  left: 3vmin;
+  width: 3vmin;
+  height: 2.5vmin;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(240, 248, 255, 0.95) 100%);
   border-radius: 50%;
-  box-shadow:
-    0 0 3vmin rgba(255, 255, 255, 0.7),
-    0 0 5vmin rgba(101, 230, 204, 0.7);
+  border: 0.3vmin solid rgba(101, 230, 204, 0.3);
+  box-shadow: 0 0 2vmin rgba(101, 230, 204, 0.4);
 }
 
 @keyframes cat-appear {
@@ -3290,10 +3339,23 @@ mask-image: linear-gradient(to top, transparent 40%, #079097 80%) !important;
   transform: translateX(-50%);
   width: 18vmin;
   height: 15vmin;
-  background: linear-gradient(135deg, #4a9ea8 0%, #65e6cc 50%, #3d8a94 100%);
+  background: linear-gradient(135deg, #e8e8e8 0%, #f5f5f5 50%, #d8d8d8 100%);
   border-radius: 40% 40% 50% 50% / 30% 30% 70% 70%;
-  box-shadow: inset 0 0 3vmin rgba(255, 255, 255, 0.3),
-              0 0 2vmin rgba(101, 230, 204, 0.5);
+  box-shadow: inset -1vmin 0 2vmin rgba(0, 0, 0, 0.1),
+              0 0.5vmin 2vmin rgba(0, 0, 0, 0.2);
+}
+
+/* White belly patch */
+.cat__body::before {
+  content: '';
+  position: absolute;
+  bottom: 1vmin;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8vmin;
+  height: 10vmin;
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.9), transparent 70%);
+  border-radius: 50%;
 }
 
 .cat__body-glow {
@@ -3303,7 +3365,7 @@ mask-image: linear-gradient(to top, transparent 40%, #079097 80%) !important;
   transform: translate(-50%, -50%);
   width: 120%;
   height: 120%;
-  background: radial-gradient(circle, rgba(101, 230, 204, 0.4), transparent 70%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3), transparent 70%);
   border-radius: inherit;
   animation: glow-pulse 2s infinite alternate;
 }
@@ -3316,11 +3378,17 @@ mask-image: linear-gradient(to top, transparent 40%, #079097 80%) !important;
   transform: translateX(-50%);
   width: 14vmin;
   height: 12vmin;
-  background: linear-gradient(135deg, #4a9ea8 0%, #65e6cc 50%, #3d8a94 100%);
+  background: linear-gradient(135deg, #e8e8e8 0%, #f8f8f8 50%, #d8d8d8 100%);
   border-radius: 50% 50% 45% 45% / 60% 60% 40% 40%;
-  box-shadow: inset 0 0 2vmin rgba(255, 255, 255, 0.3),
-              0 0 1.5vmin rgba(101, 230, 204, 0.5);
+  box-shadow: inset -0.5vmin -0.5vmin 1.5vmin rgba(0, 0, 0, 0.08),
+              0 0.3vmin 1.5vmin rgba(0, 0, 0, 0.15);
   z-index: 2;
+  animation: head-bob 3s ease-in-out infinite;
+}
+
+@keyframes head-bob {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-0.3vmin); }
 }
 
 .cat__head-glow {
@@ -3330,7 +3398,7 @@ mask-image: linear-gradient(to top, transparent 40%, #079097 80%) !important;
   transform: translate(-50%, -50%);
   width: 130%;
   height: 130%;
-  background: radial-gradient(circle, rgba(101, 230, 204, 0.3), transparent 70%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.2), transparent 70%);
   border-radius: inherit;
   animation: glow-pulse 2s 0.5s infinite alternate;
 }
@@ -3341,9 +3409,22 @@ mask-image: linear-gradient(to top, transparent 40%, #079097 80%) !important;
   top: -3vmin;
   width: 4vmin;
   height: 5vmin;
-  background: linear-gradient(135deg, #3d8a94, #65e6cc);
+  background: linear-gradient(135deg, #d0d0d0, #f0f0f0);
   clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-  box-shadow: 0 0 1vmin rgba(101, 230, 204, 0.6);
+  box-shadow: inset 0 0 1vmin rgba(0, 0, 0, 0.05),
+              0 0.2vmin 0.5vmin rgba(0, 0, 0, 0.1);
+}
+
+.cat__ear::before {
+  content: '';
+  position: absolute;
+  top: 1vmin;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2vmin;
+  height: 2.5vmin;
+  background: linear-gradient(135deg, #ffb6c1, #ffc8d4);
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
 }
 
 .cat__ear--left {
@@ -3374,10 +3455,10 @@ mask-image: linear-gradient(to top, transparent 40%, #079097 80%) !important;
   top: 4vmin;
   width: 2vmin;
   height: 2.5vmin;
-  background: linear-gradient(180deg, #fff 0%, #e0f7fa 100%);
+  background: radial-gradient(circle at 40% 40%, #a8d5a0, #7cb96e);
   border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-  box-shadow: 0 0 0.5vmin rgba(35, 240, 255, 0.8),
-              inset 0 0.3vmin 0.5vmin rgba(35, 240, 255, 0.3);
+  box-shadow: 0 0 0.5vmin rgba(124, 185, 110, 0.6),
+              inset 0 0.3vmin 0.5vmin rgba(255, 255, 255, 0.2);
   animation: cat-blink 5s infinite;
 }
 
@@ -3405,11 +3486,24 @@ mask-image: linear-gradient(to top, transparent 40%, #079097 80%) !important;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 0.8vmin;
-  height: 1.5vmin;
-  background: #1a4d52;
+  width: 0.6vmin;
+  height: 1.6vmin;
+  background: linear-gradient(180deg, #1a1a1a 0%, #000 100%);
   border-radius: 50%;
   animation: pupil-move 6s ease-in-out infinite;
+}
+
+/* Add eye shine */
+.cat__pupil::before {
+  content: '';
+  position: absolute;
+  top: 20%;
+  left: 25%;
+  width: 0.25vmin;
+  height: 0.35vmin;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 0 0.2vmin rgba(255, 255, 255, 0.8);
 }
 
 @keyframes pupil-move {
@@ -3427,47 +3521,82 @@ mask-image: linear-gradient(to top, transparent 40%, #079097 80%) !important;
   transform: translateX(-50%);
   width: 1.2vmin;
   height: 1vmin;
-  background: #ff6b9d;
+  background: linear-gradient(135deg, #ffb6c1, #ff9eb3);
   border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
-  box-shadow: 0 0 0.5vmin rgba(255, 107, 157, 0.8);
+  box-shadow: 0 0 0.3vmin rgba(255, 107, 157, 0.5),
+              inset -0.2vmin -0.2vmin 0.3vmin rgba(0, 0, 0, 0.1);
+}
+
+/* Add mouth */
+.cat__nose::before,
+.cat__nose::after {
+  content: '';
+  position: absolute;
+  top: 0.8vmin;
+  width: 1vmin;
+  height: 0.8vmin;
+  border: 0.15vmin solid #888;
+  border-top: none;
+}
+
+.cat__nose::before {
+  left: -0.5vmin;
+  border-radius: 0 0 0 80%;
+  border-right: none;
+}
+
+.cat__nose::after {
+  right: -0.5vmin;
+  border-radius: 0 0 80% 0;
+  border-left: none;
 }
 
 /* Cat Whiskers */
 .cat__whisker {
   position: absolute;
-  height: 0.15vmin;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.8), transparent);
-  box-shadow: 0 0 0.3vmin rgba(101, 230, 204, 0.6);
+  height: 0.12vmin;
+  background: linear-gradient(90deg, rgba(100, 100, 100, 0.7), transparent);
+  box-shadow: 0 0 0.2vmin rgba(0, 0, 0, 0.2);
+  animation: whisker-twitch 4s ease-in-out infinite;
+}
+
+@keyframes whisker-twitch {
+  0%, 100% { transform: rotate(var(--rotation, 0deg)); }
+  10%, 15% { transform: rotate(calc(var(--rotation, 0deg) + 3deg)); }
 }
 
 .cat__whisker--left-1 {
   bottom: 3.5vmin;
   left: -3vmin;
   width: 5vmin;
-  transform: rotate(-10deg);
+  --rotation: -10deg;
+  animation-delay: 0s;
 }
 
 .cat__whisker--left-2 {
   bottom: 2.8vmin;
   left: -3vmin;
   width: 4.5vmin;
-  transform: rotate(-5deg);
+  --rotation: -5deg;
+  animation-delay: 0.5s;
 }
 
 .cat__whisker--right-1 {
   bottom: 3.5vmin;
   right: -3vmin;
   width: 5vmin;
-  transform: rotate(10deg);
-  background: linear-gradient(-90deg, rgba(255, 255, 255, 0.8), transparent);
+  --rotation: 10deg;
+  background: linear-gradient(-90deg, rgba(100, 100, 100, 0.7), transparent);
+  animation-delay: 0.3s;
 }
 
 .cat__whisker--right-2 {
   bottom: 2.8vmin;
   right: -3vmin;
   width: 4.5vmin;
-  transform: rotate(5deg);
-  background: linear-gradient(-90deg, rgba(255, 255, 255, 0.8), transparent);
+  --rotation: 5deg;
+  background: linear-gradient(-90deg, rgba(100, 100, 100, 0.7), transparent);
+  animation-delay: 0.8s;
 }
 
 /* Cat Arms */
@@ -3475,10 +3604,10 @@ mask-image: linear-gradient(to top, transparent 40%, #079097 80%) !important;
   position: absolute;
   width: 3.5vmin;
   height: 8vmin;
-  background: linear-gradient(180deg, #4a9ea8, #65e6cc);
+  background: linear-gradient(180deg, #e0e0e0, #f0f0f0);
   border-radius: 40% 40% 50% 50%;
-  box-shadow: inset 0 0 1vmin rgba(255, 255, 255, 0.2),
-              0 0 1vmin rgba(101, 230, 204, 0.4);
+  box-shadow: inset -0.5vmin 0 1vmin rgba(0, 0, 0, 0.08),
+              0 0.3vmin 1vmin rgba(0, 0, 0, 0.15);
   z-index: 3;
 }
 
@@ -3486,12 +3615,24 @@ mask-image: linear-gradient(to top, transparent 40%, #079097 80%) !important;
   bottom: 3vmin;
   left: 3vmin;
   transform: rotate(-35deg);
+  animation: arm-wave-left 4s ease-in-out infinite;
 }
 
 .cat__arm--right {
   bottom: 3vmin;
   right: 3vmin;
   transform: rotate(35deg);
+  animation: arm-wave-right 4s 2s ease-in-out infinite;
+}
+
+@keyframes arm-wave-left {
+  0%, 90%, 100% { transform: rotate(-35deg); }
+  5% { transform: rotate(-40deg) translateY(-0.5vmin); }
+}
+
+@keyframes arm-wave-right {
+  0%, 90%, 100% { transform: rotate(35deg); }
+  5% { transform: rotate(40deg) translateY(-0.5vmin); }
 }
 
 /* Cat Tail */
@@ -3508,9 +3649,10 @@ mask-image: linear-gradient(to top, transparent 40%, #079097 80%) !important;
   position: absolute;
   width: 4vmin;
   height: 3vmin;
-  background: linear-gradient(90deg, #4a9ea8, #65e6cc);
+  background: linear-gradient(90deg, #d0d0d0, #e8e8e8);
   border-radius: 50%;
-  box-shadow: 0 0 1vmin rgba(101, 230, 204, 0.5);
+  box-shadow: inset 0 0 0.5vmin rgba(0, 0, 0, 0.05),
+              0 0.2vmin 0.8vmin rgba(0, 0, 0, 0.15);
 }
 
 .cat__tail-segment--1 {
@@ -3689,8 +3831,43 @@ mask-image: linear-gradient(to top, transparent 40%, #079097 80%) !important;
   margin-top: 0.5vmin;
 }
 
+.letter-modal__continue {
+  padding: 1.2vmin 3vmin;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  font-size: 1.7vmin;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #FF1493, #FF69B4);
+  box-shadow:
+    0 0 2vmin rgba(255, 20, 147, 0.9),
+    0 0.5vmin 1vmin rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  animation: continue-pulse 2s infinite;
+}
+
+.letter-modal__continue:hover {
+  transform: scale(1.05);
+  box-shadow:
+    0 0 3vmin rgba(255, 20, 147, 1),
+    0 0.5vmin 1.5vmin rgba(0, 0, 0, 0.4);
+}
+
+@keyframes continue-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 2vmin rgba(255, 20, 147, 0.9),
+      0 0.5vmin 1vmin rgba(0, 0, 0, 0.3);
+  }
+  50% {
+    box-shadow:
+      0 0 3.5vmin rgba(255, 20, 147, 1),
+      0 0.5vmin 1vmin rgba(0, 0, 0, 0.3);
+  }
+}
+
 .letter-modal__close {
-  margin-top: 2vmin;
   padding: 1vmin 2.5vmin;
   border-radius: 999px;
   border: none;
@@ -3702,8 +3879,328 @@ mask-image: linear-gradient(to top, transparent 40%, #079097 80%) !important;
   box-shadow:
     0 0 1.5vmin rgba(101, 230, 204, 0.9),
     0 0.5vmin 1vmin rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.letter-modal__close:hover {
+  transform: scale(1.05);
+  box-shadow:
+    0 0 2vmin rgba(101, 230, 204, 1),
+    0 0.5vmin 1.5vmin rgba(0, 0, 0, 0.4);
+}
+
+/* Cat Character Styles */
+.cat-container {
+  position: fixed;
+  bottom: 5vmin;
+  left: 8vmin;
+  z-index: 150;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.cat-container.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.cat {
+  position: relative;
+  width: 12vmin;
+  height: 12vmin;
+  animation: cat-idle 3s ease-in-out infinite;
+}
+
+@keyframes cat-idle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-1vmin); }
+}
+
+.cat__body {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8vmin;
+  height: 6vmin;
+  background: linear-gradient(135deg, #f0f0f0 0%, #d0d0d0 100%);
+  border-radius: 50% 50% 40% 40%;
+  box-shadow: 0 0.5vmin 1vmin rgba(0, 0, 0, 0.2);
+}
+
+.cat__head {
+  position: absolute;
+  bottom: 5vmin;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6vmin;
+  height: 5vmin;
+  background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+  border-radius: 50% 50% 40% 40%;
+  box-shadow: 0 0.3vmin 0.8vmin rgba(0, 0, 0, 0.15);
+}
+
+.cat__ear {
+  position: absolute;
+  top: -1.5vmin;
+  width: 0;
+  height: 0;
+  border-left: 1.2vmin solid transparent;
+  border-right: 1.2vmin solid transparent;
+  border-bottom: 2vmin solid #e0e0e0;
+}
+
+.cat__ear--left { left: 0.5vmin; transform: rotate(-15deg); }
+.cat__ear--right { right: 0.5vmin; transform: rotate(15deg); }
+
+.cat__eyes {
+  position: absolute;
+  top: 1.8vmin;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 1.5vmin;
+}
+
+.cat__eye {
+  width: 0.6vmin;
+  height: 0.8vmin;
+  background: #000;
+  border-radius: 50%;
+  animation: cat-blink 4s infinite;
+}
+
+@keyframes cat-blink {
+  0%, 48%, 52%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(0.1); }
+}
+
+.cat__nose {
+  position: absolute;
+  top: 2.8vmin;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0.8vmin;
+  height: 0.6vmin;
+  background: #ff69b4;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+}
+
+.cat__whiskers {
+  position: absolute;
+  top: 2.5vmin;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 100%;
+}
+
+.cat__whisker {
+  position: absolute;
+  width: 3vmin;
+  height: 0.15vmin;
+  background: #999;
+  border-radius: 1vmin;
+}
+
+.cat__whisker--1 { left: -2.5vmin; top: 0; transform: rotate(-10deg); }
+.cat__whisker--2 { left: -2.5vmin; top: 0.6vmin; transform: rotate(10deg); }
+.cat__whisker--3 { right: -2.5vmin; top: 0; transform: rotate(10deg); }
+.cat__whisker--4 { right: -2.5vmin; top: 0.6vmin; transform: rotate(-10deg); }
+
+.cat__tail {
+  position: absolute;
+  bottom: 1vmin;
+  right: -3vmin;
+  width: 4vmin;
+  height: 1vmin;
+  background: linear-gradient(90deg, #d0d0d0, transparent);
+  border-radius: 50%;
+  transform-origin: left center;
+  animation: cat-tail-wag 2s ease-in-out infinite;
+}
+
+@keyframes cat-tail-wag {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(10deg); }
+  75% { transform: rotate(-10deg); }
+}
+
+/* Letter in Cat's Hand */
+.cat__letter {
+  position: absolute;
+  bottom: 0.5vmin;
+  left: 7vmin;
+  width: 3.5vmin;
+  height: 4.5vmin;
+  background: linear-gradient(135deg, #fff8dc 0%, #ffefd5 100%);
+  border: 0.2vmin solid #d4af37;
+  border-radius: 0.3vmin;
+  box-shadow: 
+    0 0 2vmin rgba(255, 215, 0, 0.8),
+    0 0 1vmin rgba(212, 175, 55, 0.6);
+  opacity: 0;
+  transform: scale(0) rotate(-15deg);
+  animation: letter-appear 0.8s ease-out 5s forwards, letter-flash 1.5s ease-in-out 5.8s infinite;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.cat__letter:hover {
+  transform: scale(1.1) rotate(-10deg);
+}
+
+@keyframes letter-appear {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(-45deg);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.2) rotate(-10deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(-15deg);
+  }
+}
+
+@keyframes letter-flash {
+  0%, 100% {
+    box-shadow: 
+      0 0 2vmin rgba(255, 215, 0, 0.8),
+      0 0 1vmin rgba(212, 175, 55, 0.6);
+  }
+  50% {
+    box-shadow: 
+      0 0 4vmin rgba(255, 215, 0, 1),
+      0 0 2vmin rgba(255, 255, 255, 0.8),
+      0 0 3vmin rgba(212, 175, 55, 1);
+  }
+}
+
+.cat__letter::before {
+  content: '📜';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2.5vmin;
+}
+
+/* Speech Bubble */
+.speech-bubble {
+  position: absolute;
+  bottom: 13vmin;
+  left: -2vmin;
+  min-width: 35vmin;
+  max-width: 40vmin;
+  padding: 2vmin 2.5vmin;
+  background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 100%);
+  border: 0.3vmin solid #65e6cc;
+  border-radius: 2vmin;
+  box-shadow: 
+    0 0 2vmin rgba(101, 230, 204, 0.8),
+    0 0.5vmin 1vmin rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transform: scale(0.8) translateY(1vmin);
+  animation: bubble-appear 0.5s ease-out forwards;
+  z-index: 151;
+}
+
+@keyframes bubble-appear {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(1vmin);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -1.5vmin;
+  left: 8vmin;
+  width: 0;
+  height: 0;
+  border-left: 1.5vmin solid transparent;
+  border-right: 1.5vmin solid transparent;
+  border-top: 1.5vmin solid #ffffff;
+  filter: drop-shadow(0 0.3vmin 0.3vmin rgba(0, 0, 0, 0.1));
+}
+
+.speech-bubble::before {
+  content: '';
+  position: absolute;
+  bottom: -1.9vmin;
+  left: 7.7vmin;
+  width: 0;
+  height: 0;
+  border-left: 1.8vmin solid transparent;
+  border-right: 1.8vmin solid transparent;
+  border-top: 1.8vmin solid #65e6cc;
+  z-index: -1;
+}
+
+.speech-bubble__text {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 1.6vmin;
+  line-height: 1.5;
+  color: #0a3034;
+  text-align: left;
+}
+
+.speech-bubble__highlight {
+  color: #ff1493;
+  font-weight: 600;
+}
+
+.speech-bubble__icon {
+  display: inline-block;
+  animation: icon-bounce 1s ease-in-out infinite;
+}
+
+@keyframes icon-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-0.3vmin); }
 }
   </style>
+  
+
+  <!-- Cat Character with Letter -->
+  <div class="cat-container" id="catContainer">
+    <div class="speech-bubble">
+      <div class="speech-bubble__text">
+        <span class="speech-bubble__highlight">Jacques</span> gave me this letter for you. 
+        <span class="speech-bubble__icon">✉️</span> <strong>Click here to see what's inside.</strong>
+      </div>
+    </div>
+    <div class="cat">
+      <div class="cat__tail"></div>
+      <div class="cat__body"></div>
+      <div class="cat__head">
+        <div class="cat__ear cat__ear--left"></div>
+        <div class="cat__ear cat__ear--right"></div>
+        <div class="cat__eyes">
+          <div class="cat__eye"></div>
+          <div class="cat__eye"></div>
+        </div>
+        <div class="cat__nose"></div>
+        <div class="cat__whiskers">
+          <div class="cat__whisker cat__whisker--1"></div>
+          <div class="cat__whisker cat__whisker--2"></div>
+          <div class="cat__whisker cat__whisker--3"></div>
+          <div class="cat__whisker cat__whisker--4"></div>
+        </div>
+      </div>
+      <div class="cat__letter" id="catLetter"></div>
+    </div>
+  </div>
+  
   <!-- Hidden Letter Modal -->
   <div class="letter-modal" id="letterModal">
     <div class="letter-modal__backdrop"></div>
@@ -3720,7 +4217,10 @@ mask-image: linear-gradient(to top, transparent 40%, #079097 80%) !important;
         </p>
         <p class="letter-modal__signature">With lots of love,</p>
         <p class="letter-modal__signature">Your secret admirer 💌</p>
-        <button class="letter-modal__close" id="letterModalClose">Close letter</button>
+        <div style="display: flex; gap: 1.5vmin; margin-top: 2vmin; justify-content: center; flex-wrap: wrap;">
+          <button class="letter-modal__continue" id="letterModalContinue">Continue to Message →</button>
+          <button class="letter-modal__close" id="letterModalClose">Close letter</button>
+        </div>
       </div>
     </div>
   </div>
@@ -3729,34 +4229,58 @@ mask-image: linear-gradient(to top, transparent 40%, #079097 80%) !important;
   onload = () => {
     const c = setTimeout(() => {
       document.body.classList.remove("not-loaded");
+      
+      // Show cat after page loads (simulating "after first cloud conversation")
+      setTimeout(() => {
+        document.getElementById("catContainer").classList.add("visible");
+      }, 1000); // Cat appears 1 second after page load
+      
       clearTimeout(c);
     }, 1000);
 
-    // Letter click logic – only flower heads, not stems/grass
-    const flowers = document.querySelectorAll(".flower");
+    // Get elements
     const modal = document.getElementById("letterModal");
     const modalClose = document.getElementById("letterModalClose");
+    const modalContinue = document.getElementById("letterModalContinue");
+    const catLetter = document.getElementById("catLetter");
+    const catContainer = document.getElementById("catContainer");
 
-    flowers.forEach(flower => {
-      flower.addEventListener("click", (event) => {
-        const isFlowerHead =
-          event.target.closest(".flower__leafs") ||
-          event.target.closest(".flower__white-circle");
-
-        if (!isFlowerHead) return;
-
-        if (flower.hasAttribute("data-letter-flower") && modal) {
+    // Letter click - opens modal
+    if (catLetter) {
+      catLetter.addEventListener("click", () => {
+        if (modal) {
           modal.classList.add("letter-modal--visible");
         }
       });
-    });
+    }
 
+    // Also allow clicking anywhere on the cat container
+    if (catContainer) {
+      catContainer.addEventListener("click", (event) => {
+        // Only trigger if clicking the letter or speech bubble area
+        if (event.target.closest(".cat__letter") || event.target.closest(".speech-bubble")) {
+          if (modal) {
+            modal.classList.add("letter-modal--visible");
+          }
+        }
+      });
+    }
+
+    // Close button - just closes the modal
     if (modalClose) {
       modalClose.addEventListener("click", () => {
         modal.classList.remove("letter-modal--visible");
       });
     }
 
+    // Continue button - goes to confession page
+    if (modalContinue) {
+      modalContinue.addEventListener("click", () => {
+        window.location.href = "/confession";
+      });
+    }
+
+    // Click backdrop to close
     if (modal) {
       modal.addEventListener("click", (event) => {
         if (event.target.classList.contains("letter-modal__backdrop")) {
