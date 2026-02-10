@@ -131,14 +131,11 @@ def confession():
     This appears after the flower bouquet animation
     """
     confession_message = """
-    <em>My Dearest Carylene,</em><br><br>
-    
-    Happy Valentine's Day! 💕<br><br>
     
     On this special day, I wanted to tell you something that has been on my heart for so long.
     You mean the world to me, and being able to share this day with you makes me incredibly happy.<br><br>
     
-    With all my love,<br>
+    Grateful for you, always.<br>
     Jacques
     """
     return render_template('confession.html', message=confession_message)

@@ -3,8 +3,9 @@
 <head>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="pixel-flower-icon-vector-30702005.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Confession - Happy Valentine's Day</title>
+    <title>Happy Valentine's Day</title>
     <style>
         * {
             margin: 0;
@@ -133,6 +134,8 @@
             background: linear-gradient(135deg, #00FF00 0%, #00CC00 100%);
         }
 
+
+
         /* Floating hearts animation */
         .heart-float {
             position: fixed;
@@ -162,47 +165,47 @@
 </head>
 <body>
     <div id="confessionContainer">
-        <h1>💕 HAPPY VALENTINE'S DAY 💕</h1>
+        <h1>HAPPY VALENTINE'S DAY</h1>
         
         <div id="message">
             {{ message | safe }}
         </div>
 
         <div class="button-container">
-            <button class="back-button" onclick="goBack()">BACK TO GAME</button>
-            <button class="restart-button" onclick="restart()">PLAY AGAIN</button>
+            <button class="back-button" onclick="goBack()">PLAY AGAIN</button>
+            <button class="restart-button" onclick="backToGarden()">BACK TO GARDEN</button>
         </div>
     </div>
 
     <script>
-        // Create floating hearts
-        function createFloatingHeart() {
-            const heart = document.createElement('div');
-            heart.className = 'heart-float';
-            heart.innerHTML = '💕';
-            heart.style.left = Math.random() * window.innerWidth + 'px';
-            heart.style.top = window.innerHeight + 'px';
-            heart.style.animationDelay = Math.random() * 2 + 's';
-            document.body.appendChild(heart);
+    // Create floating hearts
+    function createFloatingHeart() {
+        const heart = document.createElement('div');
+        heart.className = 'heart-float';
+        heart.innerHTML = '💕';
+        heart.style.left = Math.random() * window.innerWidth + 'px';
+        heart.style.top = window.innerHeight + 'px';
+        heart.style.animationDelay = Math.random() * 2 + 's';
+        document.body.appendChild(heart);
 
-            setTimeout(() => heart.remove(), 6000);
-        }
+        setTimeout(() => heart.remove(), 6000);
+    }
 
-        // Generate hearts every 500ms
-        setInterval(createFloatingHeart, 500);
+    setInterval(createFloatingHeart, 500);
 
-        function goBack() {
-            window.location.href = '/';
-        }
+    function goBack() {
+        window.location.href = '/';
+    }
 
-        function restart() {
-            window.location.reload();
-        }
+    // 👉 Goes to flower.html
+    function backToGarden() {
+        window.location.href = 'flower.html';
+    }
 
-        // Auto-create initial hearts
-        for (let i = 0; i < 5; i++) {
-            setTimeout(createFloatingHeart, i * 300);
-        }
-    </script>
+    for (let i = 0; i < 5; i++) {
+        setTimeout(createFloatingHeart, i * 300);
+    }
+</script>
+
 </body>
 </html>
