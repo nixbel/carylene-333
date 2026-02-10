@@ -3909,12 +3909,23 @@ mask-image: linear-gradient(to top, transparent 40%, #079097 80%) !important;
   position: relative;
   width: 12vmin;
   height: 12vmin;
-  animation: cat-idle 3s ease-in-out infinite;
+  animation: cat-idle 4s ease-in-out infinite;
+  cursor: pointer;
 }
 
 @keyframes cat-idle {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-1vmin); }
+  0%, 100% { 
+    transform: translateY(0) scale(1); 
+  }
+  25% { 
+    transform: translateY(-0.3vmin) scale(1.01); 
+  }
+  50% { 
+    transform: translateY(-0.8vmin) scale(1); 
+  }
+  75% { 
+    transform: translateY(-0.3vmin) scale(0.99); 
+  }
 }
 
 .cat__body {
@@ -3927,6 +3938,16 @@ mask-image: linear-gradient(to top, transparent 40%, #079097 80%) !important;
   background: linear-gradient(135deg, #f0f0f0 0%, #d0d0d0 100%);
   border-radius: 50% 50% 40% 40%;
   box-shadow: 0 0.5vmin 1vmin rgba(0, 0, 0, 0.2);
+  animation: cat-breathe 3s ease-in-out infinite;
+}
+
+@keyframes cat-breathe {
+  0%, 100% {
+    transform: translateX(-50%) scale(1, 1);
+  }
+  50% {
+    transform: translateX(-50%) scale(1.02, 0.98);
+  }
 }
 
 .cat__head {
@@ -3951,8 +3972,29 @@ mask-image: linear-gradient(to top, transparent 40%, #079097 80%) !important;
   border-bottom: 2vmin solid #e0e0e0;
 }
 
-.cat__ear--left { left: 0.5vmin; transform: rotate(-15deg); }
-.cat__ear--right { right: 0.5vmin; transform: rotate(15deg); }
+.cat__ear--left { 
+  left: 0.5vmin; 
+  transform: rotate(-15deg); 
+  animation: ear-twitch-left 5s ease-in-out infinite;
+}
+
+@keyframes ear-twitch-left {
+  0%, 90%, 100% { transform: rotate(-15deg); }
+  92%, 96% { transform: rotate(-20deg); }
+  94% { transform: rotate(-10deg); }
+}
+
+.cat__ear--right { 
+  right: 0.5vmin; 
+  transform: rotate(15deg);
+  animation: ear-twitch-right 5s 1s ease-in-out infinite;
+}
+
+@keyframes ear-twitch-right {
+  0%, 90%, 100% { transform: rotate(15deg); }
+  92%, 96% { transform: rotate(20deg); }
+  94% { transform: rotate(10deg); }
+}
 
 .cat__eyes {
   position: absolute;
@@ -3968,12 +4010,13 @@ mask-image: linear-gradient(to top, transparent 40%, #079097 80%) !important;
   height: 0.8vmin;
   background: #000;
   border-radius: 50%;
-  animation: cat-blink 4s infinite;
+  animation: cat-blink 6s infinite;
 }
 
 @keyframes cat-blink {
-  0%, 48%, 52%, 100% { transform: scaleY(1); }
-  50% { transform: scaleY(0.1); }
+  0%, 46%, 54%, 96%, 100% { transform: scaleY(1); }
+  48%, 52% { transform: scaleY(0.1); }
+  98% { transform: scaleY(0.1); }
 }
 
 .cat__nose {
@@ -4022,9 +4065,10 @@ mask-image: linear-gradient(to top, transparent 40%, #079097 80%) !important;
 }
 
 @keyframes cat-tail-wag {
-  0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(10deg); }
-  75% { transform: rotate(-10deg); }
+  0%, 100% { transform: rotate(-5deg); }
+  25% { transform: rotate(15deg); }
+  50% { transform: rotate(-5deg); }
+  75% { transform: rotate(-15deg); }
 }
 
 /* Letter in Cat's Hand */
@@ -4042,28 +4086,31 @@ mask-image: linear-gradient(to top, transparent 40%, #079097 80%) !important;
     0 0 1vmin rgba(212, 175, 55, 0.6);
   opacity: 0;
   transform: scale(0) rotate(-15deg);
-  animation: letter-appear 0.8s ease-out 5s forwards, letter-flash 1.5s ease-in-out 5.8s infinite;
+  transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   cursor: pointer;
-  transition: transform 0.3s ease;
+}
+
+.cat__letter.visible {
+  opacity: 1;
+  transform: scale(1) rotate(-15deg);
+  animation: letter-flash 2s ease-in-out 0.8s infinite;
+}
+
+@keyframes letter-flash {
+  0%, 100% {
+    box-shadow: 
+      0 0 2vmin rgba(255, 215, 0, 0.8),
+      0 0 1vmin rgba(212, 175, 55, 0.6);
+  }
+  50% {
+    box-shadow: 
+      0 0 3vmin rgba(255, 215, 0, 1),
+      0 0 2vmin rgba(212, 175, 55, 0.9);
+  }
 }
 
 .cat__letter:hover {
   transform: scale(1.1) rotate(-10deg);
-}
-
-@keyframes letter-appear {
-  0% {
-    opacity: 0;
-    transform: scale(0) rotate(-45deg);
-  }
-  60% {
-    opacity: 1;
-    transform: scale(1.2) rotate(-10deg);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) rotate(-15deg);
-  }
 }
 
 @keyframes letter-flash {
@@ -4105,8 +4152,26 @@ mask-image: linear-gradient(to top, transparent 40%, #079097 80%) !important;
     0 0.5vmin 1vmin rgba(0, 0, 0, 0.2);
   opacity: 0;
   transform: scale(0.8) translateY(1vmin);
-  animation: bubble-appear 0.5s ease-out forwards;
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
   z-index: 151;
+  pointer-events: none;
+}
+
+.speech-bubble.visible {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+  pointer-events: auto;
+}
+
+.speech-bubble.clickable {
+  cursor: pointer;
+}
+
+.speech-bubble.clickable:hover {
+  transform: scale(1.02) translateY(-0.2vmin);
+  box-shadow: 
+    0 0 3vmin rgba(101, 230, 204, 1),
+    0 0.8vmin 1.5vmin rgba(0, 0, 0, 0.3);
 }
 
 @keyframes bubble-appear {
@@ -4173,10 +4238,10 @@ mask-image: linear-gradient(to top, transparent 40%, #079097 80%) !important;
 
   <!-- Cat Character with Letter -->
   <div class="cat-container" id="catContainer">
-    <div class="speech-bubble">
-      <div class="speech-bubble__text">
-        <span class="speech-bubble__highlight">Jacques</span> gave me this letter for you. 
-        <span class="speech-bubble__icon">✉️</span> <strong>Click here to see what's inside.</strong>
+    <div class="speech-bubble" id="speechBubble">
+      <div class="speech-bubble__text" id="speechBubbleText">
+        <span class="speech-bubble__icon">💬</span> 
+        <span class="speech-bubble__highlight">Jacques</span> told me to give an appreciation for you, so here's the flowers for you
       </div>
     </div>
     <div class="cat">
@@ -4230,10 +4295,41 @@ mask-image: linear-gradient(to top, transparent 40%, #079097 80%) !important;
     const c = setTimeout(() => {
       document.body.classList.remove("not-loaded");
       
-      // Show cat after page loads (simulating "after first cloud conversation")
+      // Show cat after page loads
       setTimeout(() => {
-        document.getElementById("catContainer").classList.add("visible");
-      }, 1000); // Cat appears 1 second after page load
+        const catContainer = document.getElementById("catContainer");
+        const speechBubble = document.getElementById("speechBubble");
+        const catLetter = document.getElementById("catLetter");
+        const speechBubbleText = document.getElementById("speechBubbleText");
+        
+        // Step 1: Show cat with first speech bubble
+        catContainer.classList.add("visible");
+        
+        // Show speech bubble after cat appears
+        setTimeout(() => {
+          speechBubble.classList.add("visible");
+        }, 500);
+        
+        // Step 2: After 5 seconds, show letter and change speech bubble
+        setTimeout(() => {
+          // Show letter in cat's hand
+          catLetter.classList.add("visible");
+          
+          // Change speech bubble text after letter appears
+          setTimeout(() => {
+            speechBubbleText.innerHTML = `
+              <span class="speech-bubble__highlight">Jacques</span> gave me this letter for you. 
+              <span class="speech-bubble__icon">✉️</span> <strong>Click here to see what's inside.</strong>
+            `;
+            
+            // Make speech bubble clickable
+            speechBubble.classList.add("clickable");
+            
+            // Add click handler to speech bubble
+            speechBubble.addEventListener("click", openModal);
+          }, 300);
+        }, 10000); // 5 seconds delay
+      }, 1000);
       
       clearTimeout(c);
     }, 1000);
@@ -4243,27 +4339,17 @@ mask-image: linear-gradient(to top, transparent 40%, #079097 80%) !important;
     const modalClose = document.getElementById("letterModalClose");
     const modalContinue = document.getElementById("letterModalContinue");
     const catLetter = document.getElementById("catLetter");
-    const catContainer = document.getElementById("catContainer");
+
+    // Function to open modal
+    function openModal() {
+      if (modal) {
+        modal.classList.add("letter-modal--visible");
+      }
+    }
 
     // Letter click - opens modal
     if (catLetter) {
-      catLetter.addEventListener("click", () => {
-        if (modal) {
-          modal.classList.add("letter-modal--visible");
-        }
-      });
-    }
-
-    // Also allow clicking anywhere on the cat container
-    if (catContainer) {
-      catContainer.addEventListener("click", (event) => {
-        // Only trigger if clicking the letter or speech bubble area
-        if (event.target.closest(".cat__letter") || event.target.closest(".speech-bubble")) {
-          if (modal) {
-            modal.classList.add("letter-modal--visible");
-          }
-        }
-      });
+      catLetter.addEventListener("click", openModal);
     }
 
     // Close button - just closes the modal
