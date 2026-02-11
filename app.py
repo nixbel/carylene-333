@@ -38,15 +38,23 @@ def start_conversation():
         'dialogues': [
             {
                 'speaker': 'PRINCE ???:',
-                'text': 'You did it! You saved me!'
+                'text': 'Thank you for saving me, princess!'
             },
+            {'speaker': 'PRINCESS CARYLENE:', 'text': 'You are welcome!'},
+            {'speaker': 'PRINCESS CARYLENE:', 'text': 'I am so happy to see you safe.'},
+            {'speaker': 'PRINCESS CARYLENE:', 'text': 'By the way who are you? Are you Jacques?'},
             {
                 'speaker': 'PRINCE ???:',
                 'text': 'I knew you had it in you...'
             },
             {
                 'speaker': 'PRINCE ???:',
-                'text': 'I have a gift for you.'
+                'text': 'I have a gift for you. Make sure to open it.'
+            },
+
+            {
+                'speaker': 'JACQUES:',
+                'text': 'I am Jacques, nice to meet you!'
             },
             {
                 'speaker': 'JACQUES:',

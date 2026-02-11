@@ -188,13 +188,13 @@ button:active {
 
 #heartDisplay {
     display: flex;
-    gap: 8px;
+    gap: 4px;
     margin-top: 10px;
     justify-content: center;
 }
 
 .heart-icon {
-    font-size: 24px;
+    font-size: 18px;
     transition: all 0.3s;
 }
 
@@ -435,6 +435,112 @@ button:active {
 }
 
 
+/* ===== BLOSSOM MIDNIGHT TRANSITION ===== */
+#blossomTransition {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: radial-gradient(ellipse at center, #0a001a 0%, #000000 100%);
+    overflow: hidden;
+    pointer-events: all;
+}
+
+#blossomTransition.active {
+    display: block;
+    animation: midnightFadeIn 0.4s ease-out forwards;
+}
+
+@keyframes midnightFadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.blossom-petal {
+    position: absolute;
+    border-radius: 50% 0 50% 0;
+    transform-origin: bottom center;
+    opacity: 0;
+    animation: petalBloom var(--dur) var(--delay) ease-out forwards;
+}
+
+@keyframes petalBloom {
+    0%   { opacity: 0; transform: scale(0) rotate(var(--rot)); }
+    30%  { opacity: 0.9; }
+    70%  { opacity: 0.8; transform: scale(1) rotate(var(--rot)) translate(var(--tx), var(--ty)); }
+    100% { opacity: 0; transform: scale(1.4) rotate(var(--rot)) translate(var(--tx), var(--ty)); }
+}
+
+.blossom-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 182, 193, 0.4);
+    transform: translate(-50%, -50%) scale(0);
+    animation: ringExpand var(--rdur) var(--rdelay) ease-out forwards;
+}
+
+@keyframes ringExpand {
+    0%   { transform: translate(-50%, -50%) scale(0); opacity: 0.8; }
+    100% { transform: translate(-50%, -50%) scale(1);  opacity: 0; }
+}
+
+.blossom-core {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    background: radial-gradient(circle, #fff 0%, #FFD700 40%, transparent 70%);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    animation: coreBurst 0.6s 0.1s ease-out forwards;
+}
+
+@keyframes coreBurst {
+    0%   { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    60%  { transform: translate(-50%, -50%) scale(6); opacity: 0.8; }
+    100% { transform: translate(-50%, -50%) scale(12); opacity: 0; }
+}
+
+.blossom-star {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: #FFD700;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    opacity: 0;
+    animation: starShoot var(--sdur) var(--sdelay) ease-out forwards;
+}
+
+@keyframes starShoot {
+    0%   { opacity: 1; transform: translate(-50%, -50%) translate(0,0) scale(1); }
+    80%  { opacity: 0.6; }
+    100% { opacity: 0; transform: translate(-50%, -50%) translate(var(--sx), var(--sy)) scale(0.2); }
+}
+
+#blossomText {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Press Start 2P', cursive;
+    font-size: 18px;
+    color: #FFB6C1;
+    text-shadow: 0 0 20px #FF69B4, 0 0 40px #FF1493;
+    opacity: 0;
+    text-align: center;
+    white-space: nowrap;
+    animation: blossomTextAppear 0.8s 1.0s ease-out forwards;
+    letter-spacing: 3px;
+}
+
+@keyframes blossomTextAppear {
+    0%   { opacity: 0; letter-spacing: 12px; }
+    100% { opacity: 1; letter-spacing: 3px; }
+}
+
 /* Greeting */
 #greeting {
     position: absolute;
@@ -629,8 +735,13 @@ button:active {
 
 .noButton {
     position: absolute;
-    bottom: 30px;
-    right: 30px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: linear-gradient(135deg, #FF6666 0%, #FF3333 100%);
     color: #fff;
     border: 4px solid #FFD700;
@@ -641,6 +752,9 @@ button:active {
     transition: all 0.2s ease;
     box-shadow: 0 0 30px rgba(255, 50, 50, 0.8), 0 0 15px rgba(255, 215, 0, 0.6);
     animation: buttonPulse 2s ease-in-out infinite;
+    margin: 0;
+    z-index: 1;
+    white-space: nowrap;
 }
 
 .noButton:hover {
@@ -717,6 +831,8 @@ button:active {
                 <span class="heart-icon uncollected" id="heart1">♥</span>
                 <span class="heart-icon uncollected" id="heart2">♥</span>
                 <span class="heart-icon uncollected" id="heart3">♥</span>
+                <span class="heart-icon uncollected" id="heart4">♥</span>
+                <span class="heart-icon uncollected" id="heart5">♥</span>
             </div>
             <p style="text-align: center; margin-top: 15px; font-size: 11px;">LIVES: <span id="livesCount">3</span> 👸</p>
         </div>
@@ -728,7 +844,7 @@ button:active {
 
         <div class="objective" id="objectiveText">
             <p>OBJECTIVE: </p>
-            <p>COLLECT ALL 3 HEARTS</p>
+            <p>COLLECT ALL 5 HEARTS</p>
             <p>REACH THE CASTLE</p>
             <p>SAVE YOUR PRINCE</p>
             <p style="margin-top: 10px;">AVOID BROKEN HEARTS</p>
@@ -773,8 +889,10 @@ button:active {
                 <button onclick="randomizeConfirmCloseButton()" class="confirmCloseButton" id="confirmCloseBtn">✕</button>
                 <p class="confirmTitle">OPEN THE CHEST?</p>
                 <p class="confirmText">Claim your special gift inside...</p>
-                <button onclick="openChestSequence()" class="yesButton">YES, OPEN IT!</button>
-                <button onclick="randomizeNoButton()" class="noButton" id="noBtn">NOT YET</button>
+                <div style="position: relative; display: inline-flex; justify-content: center; align-items: center;">
+                    <button onclick="openChestSequence()" class="yesButton">OPEN</button>
+                    <button onclick="randomizeNoButton()" class="noButton" id="noBtn">NOT YET</button>
+                </div>
             </div>
         </div>
 
@@ -812,6 +930,9 @@ button:active {
             <canvas id="bouquetCanvas" width="800" height="600"></canvas>
         </div>
     </div>
+
+    <!-- Blossom Midnight Transition Overlay -->
+    <div id="blossomTransition"></div>
 
     <script>
 const canvas = document.getElementById('gameCanvas');
@@ -1139,6 +1260,7 @@ function restartGame() {
     enemies[4].x = 730; enemies[4].y = 510; enemies[4].velocityX = -1.2; enemies[4].alive = true;
     enemies[5].x = 180; enemies[5].y = 380; enemies[5].velocityX = 0.8; enemies[5].alive = true;
     enemies[6].x = 460; enemies[6].y = 320; enemies[6].velocityX = -0.8; enemies[6].alive = true;
+    enemies[7].x = 200; enemies[7].y = 60; enemies[7].velocityX = 1.1; enemies[7].alive = true;
 
     // Update displays
     document.getElementById('livesCount').textContent = lives;
@@ -1237,6 +1359,12 @@ const platforms = [
     { x: 550, y: 420, width: 60, height: 20, type: 'brick' },
     { x: 450, y: 240, width: 80, height: 20, type: 'brick' },
     { x: 300, y: 200, width: 100, height: 20, type: 'brick' },
+    // Step platforms for the two high hearts
+    { x: 70, y: 310, width: 60, height: 20, type: 'brick' },
+    { x: 70, y: 230, width: 100, height: 20, type: 'brick' },
+    { x: 200, y: 100, width: 100, height: 20, type: 'brick' },
+    { x: 520, y: 290, width: 60, height: 20, type: 'brick' },
+    { x: 520, y: 210, width: 60, height: 20, type: 'brick' },
 ];
 
 // Enemies (broken hearts) - more enemies, moving platforms
@@ -1247,14 +1375,17 @@ const enemies = [
     { x: 650, y: 510, width: 32, height: 40, velocityX: -1.2, type: 'goomba', alive: true },
     { x: 730, y: 510, width: 32, height: 40, velocityX: -1.2, type: 'goomba', alive: true },
     { x: 180, y: 380, width: 32, height: 40, velocityX: 0.8, type: 'goomba', alive: true },
-    { x: 460, y: 320, width: 32, height: 40, velocityX: -0.8, type: 'goomba', alive: true }
+    { x: 460, y: 320, width: 32, height: 40, velocityX: -0.8, type: 'goomba', alive: true },
+    { x: 200, y: 60, width: 32, height: 40, velocityX: 1.1, type: 'goomba', alive: true }
 ];
 
 // Hearts to collect - harder to reach positions
 let hearts = [
     { x: 190, y: 380, width: 28, height: 28, collected: false, float: 0 },
     { x: 370, y: 260, width: 28, height: 28, collected: false, float: 0 },
-    { x: 460, y: 320, width: 28, height: 28, collected: false, float: 0 }
+    { x: 460, y: 320, width: 28, height: 28, collected: false, float: 0 },
+    { x: 100, y: 200, width: 28, height: 28, collected: false, float: 0 },
+    { x: 530, y: 180, width: 28, height: 28, collected: false, float: 0 }
 ];
 
 // Castle
@@ -2658,7 +2789,7 @@ function updateClouds() {
 }
 
 function checkWinCondition() {
-    if (heartsCollected < 3) return;
+    if (heartsCollected < 5) return;
 
     if (checkCollision(princess, flagPole)) {
         flagPole.reached = true;
@@ -2689,7 +2820,7 @@ function checkCollision(a, b) {
 
 function updateScore() {
     // Update visual heart display
-    for (let i = 1; i <= 3; i++) {
+    for (let i = 1; i <= 5; i++) {
         const heartIcon = document.getElementById(`heart${i}`);
         if (i <= heartsCollected) {
             heartIcon.className = 'heart-icon collected';
@@ -3199,9 +3330,22 @@ function randomizeConfirmCloseButton() {
 function randomizeNoButton() {
     const noBtn = document.getElementById('noBtn');
     if (noBtn) {
-        const randomX = Math.random() * 300 - 150;
-        const randomY = Math.random() * 300 - 150;
-        noBtn.style.transform = `translate(${randomX}px, ${randomY}px)`;
+        const confirmBox = document.querySelector('.confirmBox');
+        const boxRect = confirmBox.getBoundingClientRect();
+        const btnRect = noBtn.getBoundingClientRect();
+
+        const maxX = boxRect.width - btnRect.width - 20;
+        const maxY = boxRect.height - btnRect.height - 20;
+
+        const randomX = Math.random() * maxX;
+        const randomY = Math.random() * maxY;
+
+        // Switch to absolute within confirmBox
+        noBtn.style.position = 'absolute';
+        noBtn.style.top = `${randomY}px`;
+        noBtn.style.left = `${randomX}px`;
+        noBtn.style.width = 'auto';
+        noBtn.style.height = 'auto';
     }
 }
 
@@ -3229,7 +3373,15 @@ function showConfirmDialog() {
             document.getElementById('confirmDialog').style.display = 'flex';
             // Reset button positions
             document.getElementById('confirmCloseBtn').style.transform = 'translate(0, 0)';
-            document.getElementById('noBtn').style.transform = 'translate(0, 0)';
+            // Reset noBtn to overlay the OPEN button
+            const noBtn = document.getElementById('noBtn');
+            noBtn.style.position = 'absolute';
+            noBtn.style.top = '0';
+            noBtn.style.left = '0';
+            noBtn.style.width = '100%';
+            noBtn.style.height = '100%';
+            noBtn.style.transform = 'translate(0, 0)';
+            noBtn.style.whiteSpace = 'nowrap';
         })
         .catch(error => console.error('Error fetching confirm dialog:', error));
 }
@@ -3245,8 +3397,12 @@ function openChestSequence() {
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                // Redirect directly to the flower garden page
-                window.location.href = data.next_page;
+                // Hide confirm dialog immediately
+                document.getElementById('confirmDialog').style.display = 'none';
+                // Trigger the blossom midnight bloom, THEN navigate
+                triggerBlossomTransition(() => {
+                    window.location.href = data.next_page;
+                });
             }
         })
         .catch(error => console.error('Error opening chest:', error));
@@ -3470,6 +3626,134 @@ function moveLaterButton() {
 
 
 gameLoop();
+
+// ===== BLOSSOM MIDNIGHT TRANSITION =====
+function triggerBlossomTransition(callback) {
+    const overlay = document.getElementById('blossomTransition');
+    overlay.innerHTML = ''; // reset
+    overlay.classList.add('active');
+
+    const cx = window.innerWidth / 2;
+    const cy = window.innerHeight / 2;
+
+    // Color palette
+    const colors = ['#FF1493','#FF69B4','#FFB6C1','#FF85C1','#C71585','#FFD700','#FFA0BE','#FF007F'];
+
+    // --- Expanding rings ---
+    const ringSizes = [80, 160, 260, 380, 520, 680];
+    ringSizes.forEach((size, i) => {
+        const ring = document.createElement('div');
+        ring.className = 'blossom-ring';
+        ring.style.cssText = `
+            width:${size}px; height:${size}px;
+            top:${cy}px; left:${cx}px;
+            border-color: ${colors[i % colors.length]}66;
+            --rdur:${1.2 + i * 0.18}s;
+            --rdelay:${i * 0.12}s;
+        `;
+        overlay.appendChild(ring);
+    });
+
+    // --- Core burst ---
+    const core = document.createElement('div');
+    core.className = 'blossom-core';
+    overlay.appendChild(core);
+
+    // --- Petals in waves ---
+    const petalConfigs = [
+        // wave 1 – close, small
+        ...Array.from({length: 8}, (_, i) => ({
+            angle: (i / 8) * 360,
+            dist: 80 + Math.random() * 40,
+            size: 18 + Math.random() * 10,
+            delay: 0.05 + i * 0.04,
+            dur: 1.4,
+            colorIdx: i % colors.length
+        })),
+        // wave 2 – mid
+        ...Array.from({length: 12}, (_, i) => ({
+            angle: (i / 12) * 360 + 15,
+            dist: 150 + Math.random() * 60,
+            size: 22 + Math.random() * 14,
+            delay: 0.2 + i * 0.04,
+            dur: 1.6,
+            colorIdx: (i + 3) % colors.length
+        })),
+        // wave 3 – far
+        ...Array.from({length: 16}, (_, i) => ({
+            angle: (i / 16) * 360 + 8,
+            dist: 240 + Math.random() * 80,
+            size: 16 + Math.random() * 18,
+            delay: 0.35 + i * 0.04,
+            dur: 1.8,
+            colorIdx: (i + 6) % colors.length
+        })),
+        // wave 4 – outermost
+        ...Array.from({length: 20}, (_, i) => ({
+            angle: (i / 20) * 360 + 5,
+            dist: 340 + Math.random() * 120,
+            size: 12 + Math.random() * 14,
+            delay: 0.5 + i * 0.035,
+            dur: 2.0,
+            colorIdx: (i + 2) % colors.length
+        }))
+    ];
+
+    petalConfigs.forEach(cfg => {
+        const rad = cfg.angle * Math.PI / 180;
+        const px = cx + Math.cos(rad) * cfg.dist;
+        const py = cy + Math.sin(rad) * cfg.dist;
+        const tx = (px - cx) * 0.35 + 'px';
+        const ty = (py - cy) * 0.35 + 'px';
+
+        const petal = document.createElement('div');
+        petal.className = 'blossom-petal';
+        petal.style.cssText = `
+            width:${cfg.size}px; height:${cfg.size * 1.5}px;
+            top:${py}px; left:${px}px;
+            background: radial-gradient(ellipse at 30% 30%, ${colors[cfg.colorIdx]}ff, ${colors[(cfg.colorIdx+1)%colors.length]}99);
+            --rot:${cfg.angle}deg;
+            --tx:${tx};
+            --ty:${ty};
+            --dur:${cfg.dur}s;
+            --delay:${cfg.delay}s;
+            box-shadow: 0 0 8px ${colors[cfg.colorIdx]}88;
+        `;
+        overlay.appendChild(petal);
+    });
+
+    // --- Stars / sparkles shooting out ---
+    Array.from({length: 30}).forEach((_, i) => {
+        const angle = (i / 30) * Math.PI * 2;
+        const dist = 100 + Math.random() * 300;
+        const star = document.createElement('div');
+        star.className = 'blossom-star';
+        star.style.cssText = `
+            background: ${colors[i % colors.length]};
+            --sx:${Math.cos(angle) * dist}px;
+            --sy:${Math.sin(angle) * dist}px;
+            --sdur:${1.0 + Math.random() * 0.8}s;
+            --sdelay:${0.1 + Math.random() * 0.4}s;
+        `;
+        overlay.appendChild(star);
+    });
+
+    // --- Centered text ---
+    const txt = document.createElement('div');
+    txt.id = 'blossomText';
+    txt.innerHTML = '✿ OPENING... ✿';
+    overlay.appendChild(txt);
+
+    // --- Navigate after the bloom ---
+    setTimeout(() => {
+        overlay.style.transition = 'opacity 0.5s ease-in';
+        overlay.style.opacity = '0';
+        setTimeout(() => {
+            overlay.style.display = 'none';
+            if (callback) callback();
+        }, 500);
+    }, 2200);
+}
     </script>
 </body>
 </html>
