@@ -5592,6 +5592,33 @@ mask-image: linear-gradient(to top, transparent 40%, #079097 80%) !important;
   position: relative;
   animation: letter-unfold 1s 2.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
   transform-origin: center center;
+  max-height: 85vh;
+  overflow: hidden;
+}
+
+.letter-page {
+  max-height: 75vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 2vmin;
+}
+
+.letter-page::-webkit-scrollbar {
+  width: 1vmin;
+}
+
+.letter-page::-webkit-scrollbar-track {
+  background: rgba(139, 69, 19, 0.1);
+  border-radius: 1vmin;
+}
+
+.letter-page::-webkit-scrollbar-thumb {
+  background: rgba(139, 69, 19, 0.3);
+  border-radius: 1vmin;
+}
+
+.letter-page::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 69, 19, 0.5);
 }
 
 @keyframes letter-unfold {
@@ -5659,9 +5686,9 @@ mask-image: linear-gradient(to top, transparent 40%, #079097 80%) !important;
 /* Letter Title - Handwritten Style */
 .letter-modal__title {
   font-family: 'Brush Script MT', 'Lucida Handwriting', 'Apple Chancery', cursive;
-  font-size: 5vmin;
+  font-size: 4.5vmin;
   color: #2c1810;
-  margin: 0 0 3vmin 0;
+  margin: 0 0 2.5vmin 0;
   text-align: center;
   text-shadow: 0 0.2vmin 0.3vmin rgba(0, 0, 0, 0.15);
   letter-spacing: 0.2vmin;
@@ -5685,12 +5712,12 @@ mask-image: linear-gradient(to top, transparent 40%, #079097 80%) !important;
 /* Letter Body Text - Classic Serif */
 .letter-modal__text {
   font-family: 'Georgia', 'Garamond', 'Times New Roman', serif;
-  font-size: 2.2vmin;
-  line-height: 1.9;
+  font-size: 1.8vmin;
+  line-height: 1.7;
   color: #3e2723;
-  margin: 2.5vmin 0;
+  margin: 2vmin 0;
   text-align: justify;
-  text-indent: 4vmin;
+  text-indent: 3vmin;
   animation: text-write 0.8s 3.8s ease-out both;
 }
 
@@ -6160,7 +6187,7 @@ mask-image: linear-gradient(to top, transparent 40%, #079097 80%) !important;
     <div class="speech-bubble" id="speechBubble">
       <div class="speech-bubble__text" id="speechBubbleText">
         <span class="speech-bubble__icon">💬</span> 
-        <span class="speech-bubble__highlight">Jacques</span> told me to give an appreciation for you, so here's the flowers for you.
+        <span class="speech-bubble__highlight">Jacques</span> told me to give those flowers for you.
       </div>
     </div>
     <div class="cat">
@@ -6190,20 +6217,42 @@ mask-image: linear-gradient(to top, transparent 40%, #079097 80%) !important;
     <div class="letter-modal__backdrop"></div>
     <div class="letter-modal__content">
       <div class="letter-modal__card">
-        <h2 class="letter-modal__title">Dear Carylene,</h2>
-        <p class="letter-modal__text">
-          Thank you for being such a bright, beautiful light in this little glowing garden.
-          These flowers, the stars, and even the tiny cat are all here just to make you smile.
-        </p>
-        <p class="letter-modal__text">
-          Whenever you feel tired or sad, remember this place and know that you are loved,
-          appreciated, and never alone. You deserve all the gentleness and all the colors in the world.
-        </p>
-        <p class="letter-modal__signature">I'm grateful.</p>
-        <p class="letter-modal__signature">💌</p>
-        <div style="display: flex; gap: 1.5vmin; margin-top: 2vmin; justify-content: center; flex-wrap: wrap;">
-          <button class="letter-modal__continue" id="letterModalContinue">Next →</button>
-          <button class="letter-modal__close" id="letterModalClose">Close letter</button>
+        <!-- Page 1 -->
+        <div class="letter-page" id="letterPage1" style="display: block;">
+          <h2 class="letter-modal__title">Hi Cawywynn? Caruline? Este, Carylene.</h2>
+          <p class="letter-modal__text">
+            First of all, I want to say thank you for being with me for such a long time. You are a wonderful person, and I'm truly grateful to have you in my life. I don't know if this is the right timing, but I don't want to miss the chance to express my deepest thoughts and true feelings to you. I won't make this too long.
+          </p>
+          <p class="letter-modal__text">
+Sa mga panahong nakakasama mo ako, kahit sa busy days natin, you still chose to be understanding. Sa hilig ko sa laro na kahit hindi mo masyadong maintindihan, you still tried to join me and sabayan ako — and I truly appreciated that. Malaking bagay sa akin yung presensya mo.
+
+Sa tagal ng pag-uusap natin, kahit minsan kung anu-ano na lang yung sinasabi ko, sinasabayan mo pa rin ako. I appreciate that more than you know.
+
+Lubos din akong nagpapasalamat sa consistency ng pag-uusap natin despite the distance and our busy schedules. Habang tumatagal, unti-unti kitang mas nakikilala. I appreciate the things you love, your hobbies, your dreams, the things you go through, and most especially, who you are as a person.
+          </p>
+          <div style="display: flex; gap: 1.5vmin; margin-top: 2vmin; justify-content: center; flex-wrap: wrap;">
+            <button class="letter-modal__close" id="letterModalClose">Close letter</button>
+            <button class="letter-modal__continue" id="goToPage2">Page 2 →</button>
+          </div>
+        </div>
+
+
+        <!-- Page 2 -->
+        <div class="letter-page" id="letterPage2" style="display: none;">
+          <h2 class="letter-modal__title">Hi Cawywynn? Careline? Este, Carylene</h2>
+          <p class="letter-modal__text">
+Sa totoo lang, noong una akala ko kaibigan lang talaga kita — and maybe doon lang din dapat patungo. Pero habang tumatagal, may nabubuong kakaibang pakiramdam na matagal ko nang kinikimkim.
+
+I'm not a fan of rushing things stated by my favorite old song of Elvis Presley stated that "Wise men say, only fools rush in". So here I am, choosing to be honest and sincere with you. I genuinely like you. I've adored you for a long time now, and when the right time and right moment come, I would like to pursue you. The way we are with each other — napapasaya mo ako, at sana napapasaya rin kita kahit medyo cringe minsan. Looking forward na makauwi ka sa May dito sa Bicol (wow umasa).
+
+I'm not saying this to pressure you. I just want to be honest about what I truly feel. And I am forever grateful. So excited to see you soon!
+          </p>
+          <p class="letter-modal__signature">Knowing you more only makes me admire and adore you even more.</p>
+          <p class="letter-modal__signature">From: Jacques</p>
+          <div style="display: flex; gap: 1.5vmin; margin-top: 2vmin; justify-content: center; flex-wrap: wrap;">
+            <button class="letter-modal__continue" id="goToPage1">← Page 1</button>
+            <button class="letter-modal__continue" id="letterModalContinue">Next →</button>
+          </div>
         </div>
       </div>
     </div>
@@ -6584,4 +6633,68 @@ mask-image: linear-gradient(to top, transparent 40%, #079097 80%) !important;
   })();
 </script>
 
-</html>
+
+<script>
+  // Page navigation for letter modal
+  (function() {
+    function initPageNavigation() {
+      const page1 = document.getElementById('letterPage1');
+      const page2 = document.getElementById('letterPage2');
+      const goToPage2Btn = document.getElementById('goToPage2');
+      const goToPage1Btn = document.getElementById('goToPage1');
+      
+      if (goToPage2Btn) {
+        goToPage2Btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          if (page1 && page2) {
+            page1.style.display = 'none';
+            page2.style.display = 'block';
+          }
+        });
+      }
+      
+      if (goToPage1Btn) {
+        goToPage1Btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          if (page1 && page2) {
+            page2.style.display = 'none';
+            page1.style.display = 'block';
+          }
+        });
+      }
+    }
+    
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initPageNavigation);
+    } else {
+      initPageNavigation();
+    }
+  })();
+</script>
+
+</html><script>
+  // Page navigation for letter modal
+  document.addEventListener('DOMContentLoaded', function() {
+    const page1 = document.getElementById('letterPage1');
+    const page2 = document.getElementById('letterPage2');
+    const goToPage2Btn = document.getElementById('goToPage2');
+    const goToPage1Btn = document.getElementById('goToPage1');
+    
+    if (goToPage2Btn) {
+      goToPage2Btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        page1.style.display = 'none';
+        page2.style.display = 'block';
+      });
+    }
+    
+    if (goToPage1Btn) {
+      goToPage1Btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        page2.style.display = 'none';
+        page1.style.display = 'block';
+      });
+    }
+  });
+</script>
