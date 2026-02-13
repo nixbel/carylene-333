@@ -151,7 +151,7 @@ def confession():
     """
     confession_message = """
     
-   Hi! I just want you to know that I’ll always be here for you. Thank you for bringing so much happiness into my life. I may not be able to give you real flowers since I’m not familiar with places near you, so I made something special instead a bouquet written in code and a program, created with love just for you.<br><br>
+   Hi! I just want you to know that I’ll always be here for you. Thank you for bringing so much happiness into my life. I sincerely apologize if I may not be able to give you real flowers since I’m not familiar with places near you, so I made something special instead a bouquet written in code and a program, created with love just for you.<br><br>
     
     Grateful for you, always.<br>
     Jacques
