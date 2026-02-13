@@ -49,7 +49,7 @@ def start_conversation():
             {'speaker': 'CARYLENE:', 'text': 'By the way who are you? Are you Jacques?'},
             {
                 'speaker': 'PRINCE ???:',
-                'text': 'So I would like to intoduce myself'
+                'text': 'So I would like to introduce myself'
             },
             {
                 'speaker': 'PRINCE ???:',
