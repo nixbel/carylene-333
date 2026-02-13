@@ -1,7 +1,11 @@
 from flask import Flask, render_template, jsonify, request
 import secrets
+import os
 
-app = Flask(__name__, template_folder='.', static_folder='.', static_url_path='')
+# Get the directory where this script is located
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+app = Flask(__name__, template_folder=BASE_DIR, static_folder=BASE_DIR, static_url_path='')
 app.secret_key = secrets.token_hex(16)
 
 # Add CORS headers manually for proper API communication
