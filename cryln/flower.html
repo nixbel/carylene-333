@@ -5133,15 +5133,13 @@ mask-image: linear-gradient(to top, transparent 40%, #079097 80%) !important;
 
 /* Cat Eyes */
 .cat__eye {
-  position: absolute;
-  top: 4vmin;
-  width: 2vmin;
-  height: 2.5vmin;
-  background: radial-gradient(circle at 40% 40%, #a8d5a0, #7cb96e);
-  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-  box-shadow: 0 0 0.5vmin rgba(124, 185, 110, 0.6),
-              inset 0 0.3vmin 0.5vmin rgba(255, 255, 255, 0.2);
-  animation: cat-blink 5s infinite;
+  /* FIX: Reset position to allow flexbox gap to work */
+  position: relative; 
+  width: 0.6vmin;
+  height: 0.8vmin;
+  background: #000;
+  border-radius: 50%;
+  animation: cat-blink 6s infinite;
 }
 
 .cat__eye--left {
